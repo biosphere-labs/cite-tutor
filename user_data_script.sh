@@ -103,12 +103,12 @@ class SpotInterruptionHandler:
         job = json.loads(job_data)
         
         logger.info(f"Processing job: {job.get('job_id', 'unknown')}")
-        
-        # Your ML model inference code here
-        # Example: LinkedIn article generation
+
+        # Your ML model training code here
+        # Example: Cite-Tutor model training
         # model = load_model()
-        # result = model.generate(job['prompt'])
-        # save_result_to_s3(result, job['output_path'])
+        # result = model.train(job['training_data'])
+        # save_model_to_s3(result, job['output_path'])
         
         time.sleep(10)  # Simulate processing time
         logger.info("Job completed successfully")

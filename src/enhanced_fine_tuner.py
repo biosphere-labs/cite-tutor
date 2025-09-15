@@ -674,6 +674,6 @@ if __name__ == "__main__":
         }
     ]
 
-    print("Enhanced Fine-Tuner initialized")
+    print("Cite-Tutor Enhanced Fine-Tuner initialized")
     print(f"Configuration: {fine_tuner.config}")
     print(f"Ready for multi-stage training of integrated {domain_config.current_domain} knowledge")

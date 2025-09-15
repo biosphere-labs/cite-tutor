@@ -1,5 +1,5 @@
 """
-Domain Configuration Manager for Sci-Tutor
+Domain Configuration Manager for Cite-Tutor
 
 This module provides a centralized way to access domain-specific configurations,
 replacing hardcoded domain-specific patterns and data throughout the application.

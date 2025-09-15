@@ -1,6 +1,27 @@
-# Sci-Tutor
+# Cite-Tutor
 
-This project processes academic PDF books and papers (including scanned documents), extracts citations, retrieves foundational papers via Google Scholar + Sci-Hub, and creates a fine-tuned AI tutoring system with real-time citation lookup capabilities. Optimized for 4GB VRAM GPUs and supports any academic domain.
+Cite-Tutor is an AI-powered academic research assistant that processes PDF books and papers, extracts and validates citations, retrieves foundational papers via Google Scholar + Sci-Hub, and creates a fine-tuned AI tutoring system with real-time citation lookup capabilities. Optimized for 4GB VRAM GPUs and supports any academic domain.
+
+## Why Cite-Tutor?
+
+Unlike generic AI assistants that hallucinate citations or provide outdated information, **Cite-Tutor grounds its responses in verified academic sources**. It doesn't just generate answers—it traces knowledge back to original papers, validates citations in real-time, and builds domain expertise from foundational literature. This makes it invaluable for researchers, students, and academics who need **accurate, citable information with provenance**. The system trains on domain-specific books plus retrieved foundational papers, creating AI tutors that understand the historical context and evolution of ideas. Additionally, Cite-Tutor can be deployed as an **MCP (Model Context Protocol) plugin**, allowing integration with primary AI systems like OpenAI or Claude to enhance them with verified academic knowledge and citation capabilities.
+
+## Architecture Overview
+
+![Cite-Tutor Architecture](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/your-username/cite-tutor/main/architecture.puml)
+
+**Architecture Components:**
+- **Local Development**: CLI tools, configuration files, training data preparation
+- **AWS Orchestration**: Training pipeline management, job scheduling, cost monitoring
+- **Spot Fleet Workers**: GPU-enabled instances for cost-effective model training
+- **Storage Layer**: S3 buckets for data, models, and checkpoints
+- **Domain System**: Multi-domain support (Chemistry, Physics, Math, Biology, Engineering)
+- **Training Pipeline**: 3-stage fine-tuning with specialized models
+
+**View Options:**
+- 📊 [Interactive Diagram](https://www.plantuml.com/plantuml/uml/~1UDfTK0kqLSeXFhIKmbAeEllFpKSY60)
+- 📁 [Source PlantUML File](architecture.puml)
+- 📖 [Detailed Architecture Documentation](docs/aws-spot-fleet-training.md)
 
 ## Key Features
 
@@ -24,14 +45,14 @@ This project processes academic PDF books and papers (including scanned document
 
 ```bash
 git clone <repository-url>
-cd sci-tutor
+cd cite-tutor
 ```
 
 ### 2. Create Conda Environment
 
 ```bash
 conda env create -f environment.yml
-conda activate sci-tutor
+conda activate cite-tutor
 ```
 
 ### 3. Install Package in Development Mode
@@ -49,7 +70,7 @@ python -c "from src.utils.gpu_validator import check_gpu_memory; check_gpu_memor
 ## Project Structure
 
 ```
-sci-tutor/
+cite-tutor/
 ├── src/
 │   ├── pdf_processor.py           # PDF extraction with OCR
 │   ├── structure_detector.py      # AI document structure (tiny models)

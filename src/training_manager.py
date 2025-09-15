@@ -722,4 +722,4 @@ if __name__ == "__main__":
     else:
         logger.warning("❌ Training exceeds budget limit!")
 
-    print("Universal Multi-Stage Trainer ready for chemistry model training!")
+    print("Cite-Tutor Universal Multi-Stage Trainer ready for academic model training!")

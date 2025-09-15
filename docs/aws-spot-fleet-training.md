@@ -1,8 +1,8 @@
-# AWS Spot Fleet Training Orchestration for Sci-Tutor
+# AWS Spot Fleet Training Orchestration for Cite-Tutor
 
 ## Overview
 
-This document provides comprehensive documentation for training the Sci-Tutor AI models using AWS Spot Fleets for cost-effective GPU-accelerated training. The system uses spot instances to reduce training costs by up to 90% compared to on-demand instances.
+This document provides comprehensive documentation for training the Cite-Tutor AI models using AWS Spot Fleets for cost-effective GPU-accelerated training. The system uses spot instances to reduce training costs by up to 90% compared to on-demand instances.
 
 ## Architecture Overview
 
@@ -442,4 +442,4 @@ For a typical 3-stage training pipeline:
 4. **Create automated deployment scripts**
 5. **Set up budget alerts and controls**
 
-This AWS spot fleet orchestration system provides a cost-effective, scalable solution for training Sci-Tutor models while maintaining reliability through proper interruption handling and checkpointing.
+This AWS spot fleet orchestration system provides a cost-effective, scalable solution for training Cite-Tutor models while maintaining reliability through proper interruption handling and checkpointing.

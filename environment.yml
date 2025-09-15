@@ -1,4 +1,4 @@
-name: sci-tutor
+name: cite-tutor
 channels:
   - pytorch
   - conda-forge

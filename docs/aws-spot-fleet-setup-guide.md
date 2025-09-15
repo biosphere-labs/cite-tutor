@@ -1,4 +1,4 @@
-# AWS Spot Fleet Training Setup Guide for Sci-Tutor
+# AWS Spot Fleet Training Setup Guide for Cite-Tutor
 
 ## What This Guide Covers
 
@@ -73,8 +73,8 @@ sudo apt-get install -y python3-pip git
 pip3 install boto3 torch transformers datasets accelerate peft
 
 # Clone repository
-git clone YOUR-REPO-URL sci-tutor
-cd sci-tutor
+git clone YOUR-REPO-URL cite-tutor
+cd cite-tutor
 
 # Set environment variables
 echo 'export SQS_QUEUE_URL="YOUR-SQS-QUEUE-URL"' >> ~/.bashrc
@@ -365,4 +365,4 @@ The trained models will be saved in S3 at:
 - `s3://YOUR-MODEL-BUCKET/chemistry/final/`
 - `s3://YOUR-MODEL-BUCKET/chemistry/embedding/`
 
-This setup provides cost-effective training of all Sci-Tutor models using AWS Spot Fleet with automatic scaling and interruption handling.
+This setup provides cost-effective training of all Cite-Tutor models using AWS Spot Fleet with automatic scaling and interruption handling.

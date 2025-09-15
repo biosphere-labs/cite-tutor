@@ -1,0 +1,262 @@
+@startuml Cite-Tutor Architecture
+!theme aws-orange
+!define AWSPUML https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v18.0/dist
+!includeurl AWSPUML/AWSCommon.puml
+!includeurl AWSPUML/Storage/SimpleStorageService.puml
+!includeurl AWSPUML/Compute/EC2.puml
+!includeurl AWSPUML/ApplicationIntegration/SimpleQueueService.puml
+!includeurl AWSPUML/ManagementGovernance/CloudWatch.puml
+
+title Cite-Tutor: Multi-Domain Academic AI Training Architecture
+
+skinparam backgroundColor #FAFAFA
+skinparam defaultFontSize 11
+skinparam packageBorderColor #2E86AB
+skinparam packageBackgroundColor #F8F9FA
+
+' Define color scheme
+!define PRIMARY #2E86AB
+!define SECONDARY #A23B72
+!define ACCENT #F18F01
+!define SUCCESS #C73E1D
+
+package "Local Development Environment" as local {
+    rectangle "Developer Workstation" as dev {
+        component "Cite-Tutor CLI" as cli
+        component "Domain Config\n(domains.yaml)" as domain_config
+        component "Model Config\n(models.yaml)" as model_config
+        component "Training Data" as training_data
+    }
+}
+
+package "MCP Integration Layer" as mcp_layer {
+    rectangle "MCP Server" as mcp_server {
+        component "Citation Tools" as cite_tools
+        component "Paper Retrieval" as paper_retrieval
+        component "Domain Knowledge" as domain_knowledge
+        component "Validation Engine" as validation_engine
+    }
+
+    rectangle "AI System Integration" as ai_integration {
+        component "OpenAI GPT\nIntegration" as openai_integration
+        component "Claude\nIntegration" as claude_integration
+        component "Custom AI\nIntegration" as custom_integration
+    }
+}
+
+package "AWS Cloud Infrastructure" as aws {
+
+    package "Training Orchestration" as orchestration {
+        EC2(orchestrator, "Orchestrator Instance", "t3.medium") {
+            component "Training Pipeline Manager" as pipeline_mgr
+            component "Job Scheduler" as scheduler
+            component "Cost Monitor" as cost_monitor
+            component "Fleet Manager" as fleet_mgr
+        }
+    }
+
+    package "Message Queue System" as messaging {
+        SimpleQueueService(training_queue, "Training Jobs Queue", "SQS")
+        SimpleQueueService(results_queue, "Results Queue", "SQS")
+    }
+
+    package "Spot Fleet Training Workers" as workers {
+        package "Worker Instance Pool" as worker_pool {
+            EC2(worker1, "GPU Worker 1", "g4dn.xlarge") {
+                component "Spot Handler" as spot1
+                component "Model Trainer" as trainer1
+                component "Checkpoint Manager" as checkpoint1
+            }
+
+            EC2(worker2, "GPU Worker 2", "g4dn.xlarge") {
+                component "Spot Handler" as spot2
+                component "Model Trainer" as trainer2
+                component "Checkpoint Manager" as checkpoint2
+            }
+
+            EC2(workerN, "GPU Worker N", "g4dn.xlarge") {
+                component "Auto Scaling\n(0-10 instances)" as auto_scale
+            }
+        }
+    }
+
+    package "Storage Layer" as storage {
+        SimpleStorageService(data_bucket, "Training Data Bucket", "S3")
+        SimpleStorageService(model_bucket, "Model Artifacts Bucket", "S3")
+        SimpleStorageService(checkpoint_bucket, "Checkpoints Bucket", "S3")
+    }
+
+    package "Monitoring & Logging" as monitoring {
+        CloudWatch(cloudwatch, "CloudWatch", "Metrics & Logs")
+        component "Cost Tracking" as cost_tracking
+        component "Performance Metrics" as perf_metrics
+        component "Alert System" as alerts
+    }
+}
+
+package "Model Training Pipeline" as pipeline {
+    rectangle "Stage 1: Document Processing" as stage1 {
+        component "Structure Analysis\n(FLAN-T5-Small)" as structure
+        component "Citation Extraction" as citation
+        component "Q&A Generation\n(FLAN-T5-Small)" as qa_gen
+    }
+
+    rectangle "Stage 2: Fine-Tuning Pipeline" as stage2 {
+        component "Book Foundation\n(DistilGPT2 + LoRA)" as book_ft
+        component "Paper Integration\n(Multi-Stage)" as paper_ft
+        component "Knowledge Synthesis\n(Final Model)" as synthesis
+    }
+
+    rectangle "Stage 3: Deployment Ready" as stage3 {
+        component "Embedding Model\n(MiniLM-L6-v2)" as embedding
+        component "RAG System" as rag
+        component "Final Tutor Model" as final_model
+    }
+}
+
+package "Domain Configuration System" as domain_system {
+    rectangle "Multi-Domain Support" as domains {
+        component "Chemistry\nPatterns & Keywords" as chemistry
+        component "Physics\nPatterns & Keywords" as physics
+        component "Mathematics\nPatterns & Keywords" as math
+        component "Biology\nPatterns & Keywords" as biology
+        component "Engineering\nPatterns & Keywords" as engineering
+    }
+
+    component "Domain Config Manager" as domain_mgr
+}
+
+' Relationships and Data Flow
+
+' Development to Cloud
+dev --> orchestrator : "Deploy & Configure"
+cli --> domain_config : "Select Domain"
+domain_config --> domain_mgr : "Load Configuration"
+
+' Orchestration Flow
+pipeline_mgr --> scheduler : "Create Jobs"
+scheduler --> training_queue : "Submit Jobs"
+fleet_mgr --> worker_pool : "Manage Capacity"
+cost_monitor --> alerts : "Budget Alerts"
+
+' Worker Processing Flow
+training_queue --> spot1 : "Poll Jobs"
+training_queue --> spot2 : "Poll Jobs"
+spot1 --> data_bucket : "Download Data"
+spot2 --> data_bucket : "Download Data"
+
+trainer1 --> checkpoint1 : "Save Checkpoints"
+trainer2 --> checkpoint2 : "Save Checkpoints"
+checkpoint1 --> checkpoint_bucket : "Upload"
+checkpoint2 --> checkpoint_bucket : "Upload"
+
+trainer1 --> model_bucket : "Save Models"
+trainer2 --> model_bucket : "Save Models"
+
+' Training Pipeline Flow
+structure --> qa_gen : "Processed Documents"
+qa_gen --> book_ft : "Training Data"
+book_ft --> paper_ft : "Foundation Model"
+paper_ft --> synthesis : "Integrated Model"
+synthesis --> final_model : "Tuned Model"
+embedding --> rag : "Document Vectors"
+
+' Domain Configuration Flow
+domain_mgr --> structure : "Domain Patterns"
+domain_mgr --> citation : "Journal Configs"
+domain_mgr --> qa_gen : "Context Rules"
+
+' Monitoring Flow
+worker1 --> cloudwatch : "Metrics & Logs"
+worker2 --> cloudwatch : "Metrics & Logs"
+orchestrator --> cloudwatch : "System Metrics"
+cloudwatch --> cost_tracking : "Usage Data"
+cloudwatch --> perf_metrics : "Performance Data"
+perf_metrics --> alerts : "Threshold Alerts"
+
+' Results Flow
+trainer1 --> results_queue : "Job Complete"
+trainer2 --> results_queue : "Job Complete"
+results_queue --> pipeline_mgr : "Status Updates"
+
+' MCP Integration Flow
+cli --> mcp_server : "Deploy MCP Server"
+final_model --> domain_knowledge : "Trained Models"
+rag --> cite_tools : "Citation Database"
+embedding --> paper_retrieval : "Search Vectors"
+
+' AI System Integration
+cite_tools --> openai_integration : "Citation Tools"
+cite_tools --> claude_integration : "Citation Tools"
+paper_retrieval --> openai_integration : "Paper Lookup"
+paper_retrieval --> claude_integration : "Paper Lookup"
+domain_knowledge --> openai_integration : "Domain Expertise"
+domain_knowledge --> claude_integration : "Domain Expertise"
+validation_engine --> openai_integration : "Fact Checking"
+validation_engine --> claude_integration : "Fact Checking"
+
+' Storage Access Patterns
+data_bucket <--> worker_pool : "Training Data"
+model_bucket <--> worker_pool : "Model Artifacts"
+checkpoint_bucket <--> worker_pool : "Checkpoints"
+model_bucket --> mcp_server : "Deploy Models"
+
+note top of orchestration
+  **Orchestrator Responsibilities:**
+  • Job scheduling and management
+  • Spot fleet scaling decisions
+  • Cost monitoring and budget control
+  • Training pipeline coordination
+  • Result aggregation and validation
+end note
+
+note right of workers
+  **Worker Instance Features:**
+  • Spot interruption handling
+  • Automatic checkpoint saving
+  • GPU memory optimization (4GB)
+  • Multi-model training support
+  • Auto-scaling (0-10 instances)
+end note
+
+note bottom of pipeline
+  **Training Pipeline Stages:**
+  1. Document structure analysis
+  2. Citation extraction and validation
+  3. Q&A pair generation
+  4. Multi-stage fine-tuning
+  5. Embedding model training
+  6. RAG system integration
+end note
+
+note left of domain_system
+  **Domain Configuration:**
+  • Abstracted domain patterns
+  • Journal abbreviations
+  • Author databases
+  • Context classifications
+  • Training examples
+  • Easy domain switching
+end note
+
+note right of mcp_layer
+  **MCP Integration Benefits:**
+  • Enhance OpenAI/Claude with citations
+  • Real-time paper retrieval
+  • Domain-specific knowledge injection
+  • Citation validation & fact-checking
+  • Seamless AI system integration
+  • Plugin architecture for extensibility
+end note
+
+note bottom of storage
+  **Cost Optimization:**
+  • Spot instances (90% savings)
+  • 4-bit quantization
+  • LoRA fine-tuning
+  • Checkpoint resumption
+  • Auto-scaling policies
+  • Budget controls
+end note
+
+@enduml

@@ -1,8 +1,8 @@
-# Model Training Configuration for Sci-Tutor
+# Model Training Configuration for Cite-Tutor
 
 ## Overview
 
-This document provides comprehensive guidance on using the `config/models.yaml` file to configure and train AI models for the Sci-Tutor system. The configuration is optimized for 4GB VRAM GPUs while maintaining training quality and supporting various model components.
+This document provides comprehensive guidance on using the `config/models.yaml` file to configure and train AI models for the Cite-Tutor system. The configuration is optimized for 4GB VRAM GPUs while maintaining training quality and supporting various model components.
 
 ## Configuration Structure
 
@@ -706,4 +706,4 @@ python src/aws_orchestrator.py \
   --budget-limit 5.00
 ```
 
-This comprehensive configuration system allows efficient training of Sci-Tutor models across different domains while maintaining cost control and resource optimization.
+This comprehensive configuration system allows efficient training of Cite-Tutor models across different domains while maintaining cost control and resource optimization.

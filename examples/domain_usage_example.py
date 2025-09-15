@@ -23,7 +23,7 @@ def demonstrate_domain_switching():
     """Demonstrate how the system works with different domains."""
 
     print("=" * 80)
-    print("SCI-TUTOR DOMAIN CONFIGURATION SYSTEM DEMONSTRATION")
+    print("CITE-TUTOR DOMAIN CONFIGURATION SYSTEM DEMONSTRATION")
     print("=" * 80)
 
     # Get domain configuration
@@ -175,7 +175,7 @@ def main():
         print(f"\n{'='*80}")
         print("DOMAIN CONFIGURATION SYSTEM DEMONSTRATION COMPLETE")
         print("="*80)
-        print("The sci-tutor system now supports multiple academic domains through configuration!")
+        print("The Cite-Tutor system now supports multiple academic domains through configuration!")
         print("You can switch domains by simply changing the domain configuration.")
         print("All hardcoded domain-specific patterns have been abstracted into the configuration file.")
 
