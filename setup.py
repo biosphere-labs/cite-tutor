@@ -8,7 +8,7 @@ setup(
     author_email="your.email@example.com",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
-    python_requires=">=3.10",
+    python_requires=">=3.13",
     install_requires=[
         "transformers==4.30.2",
         "datasets==2.14.0",
@@ -38,7 +38,7 @@ setup(
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.13",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
     ],
 )
