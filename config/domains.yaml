@@ -1,0 +1,1012 @@
+# Domain-specific configuration for sci-tutor
+# This file contains all domain-specific patterns, keywords, and configurations
+# that were previously hardcoded in the source files
+
+# Available domains
+available_domains:
+  - chemistry
+  - physics
+  - mathematics
+  - biology
+  - engineering
+
+# Default domain (used if not specified)
+default_domain: chemistry
+
+# Domain configurations
+domains:
+  chemistry:
+    name: "Chemistry"
+    description: "Chemical sciences including organic, inorganic, physical, and analytical chemistry"
+
+    # Journal abbreviations and full names (from scholar_scraper.py)
+    journals:
+      "j. am. chem. soc.": "Journal of the American Chemical Society"
+      "j.am.chem.soc.": "Journal of the American Chemical Society"
+      "jacs": "Journal of the American Chemical Society"
+      "angew. chem.": "Angewandte Chemie International Edition"
+      "angew.chem.": "Angewandte Chemie International Edition"
+      "ber. dtsch. chem. ges.": "Berichte der Deutschen Chemischen Gesellschaft"
+      "ber.dtsch.chem.ges.": "Berichte der Deutschen Chemischen Gesellschaft"
+      "ber.": "Berichte der Deutschen Chemischen Gesellschaft"
+      "j. org. chem.": "Journal of Organic Chemistry"
+      "j.org.chem.": "Journal of Organic Chemistry"
+      "j. phys. chem.": "Journal of Physical Chemistry"
+      "j.phys.chem.": "Journal of Physical Chemistry"
+      "chem. rev.": "Chemical Reviews"
+      "chem.rev.": "Chemical Reviews"
+      "tetrahedron lett.": "Tetrahedron Letters"
+      "tetrahedron": "Tetrahedron"
+      "chem. comm.": "Chemical Communications"
+      "chem. commun.": "Chemical Communications"
+      "j. chem. phys.": "Journal of Chemical Physics"
+      "j.chem.phys.": "Journal of Chemical Physics"
+      "nature": "Nature"
+      "science": "Science"
+      "proc. natl. acad. sci.": "Proceedings of the National Academy of Sciences"
+      "ann. chem.": "Annalen der Chemie"
+      "liebigs ann.": "Liebigs Annalen der Chemie"
+      "j. chem. soc.": "Journal of the Chemical Society"
+      "j.chem.soc.": "Journal of the Chemical Society"
+      "acc. chem. res.": "Accounts of Chemical Research"
+
+    # Domain-specific keywords for validation (from scholar_scraper.py)
+    keywords:
+      - chemistry
+      - chemical
+      - molecule
+      - molecular
+      - reaction
+      - synthesis
+      - organic
+      - inorganic
+      - physical chemistry
+      - analytical chemistry
+      - catalyst
+      - catalysis
+      - bond
+      - electron
+      - atom
+      - compound
+      - structure
+      - spectroscopy
+      - thermodynamics
+      - kinetics
+      - mechanism
+
+    # Foundational authors (from citation_extractor.py)
+    foundational_authors:
+      - pauling
+      - woodward
+      - corey
+      - hückel
+      - huckel
+      - mulliken
+      - robinson
+      - ingold
+      - winstein
+      - brown
+      - bartlett
+      - fischer
+      - kekulé
+      - kekule
+      - vant hoff
+      - le bel
+      - arrhenius
+      - ostwald
+      - nernst
+      - lewis
+      - langmuir
+      - sidgwick
+      - fajans
+      - born
+      - haber
+      - bosch
+      - grignard
+      - sabatier
+      - werner
+      - coordination
+      - diels
+      - alder
+      - wittig
+      - cope
+      - claisen
+      - aldol
+      - mannich
+      - friedel
+      - crafts
+      - wurtz
+      - kolbe
+      - perkin
+      - hofmann
+
+    # Context classifications (from citation_extractor.py and paper_processor.py)
+    contexts:
+      synthesis:
+        - synthesis
+        - synthesize
+        - preparation
+        - prepared
+        - reaction
+        - yield
+        - product
+        - reagent
+        - catalyst
+        - procedure
+      mechanism:
+        - mechanism
+        - pathway
+        - intermediate
+        - transition
+        - state
+        - catalysis
+        - kinetics
+        - rate
+        - elementary
+        - step
+      structure:
+        - structure
+        - conformation
+        - configuration
+        - stereochemistry
+        - geometry
+        - bond
+        - angle
+        - length
+        - crystal
+      theory:
+        - theory
+        - theoretical
+        - quantum
+        - molecular
+        - orbital
+        - electronic
+        - valence
+        - hybridization
+        - resonance
+      spectroscopy:
+        - spectroscopy
+        - nmr
+        - infrared
+        - ultraviolet
+        - mass
+        - spectrometry
+        - x-ray
+        - diffraction
+        - analysis
+      thermodynamics:
+        - thermodynamics
+        - enthalpy
+        - entropy
+        - free energy
+        - equilibrium
+        - constant
+        - temperature
+        - pressure
+        - phase
+
+    # Document section patterns (from paper_processor.py)
+    sections:
+      abstract: "\\b(?:abstract|summary)\\b"
+      introduction: "\\b(?:introduction|background|previous work)\\b"
+      experimental: "\\b(?:experimental|methods?|procedure|preparation|synthesis)\\b"
+      results: "\\b(?:results?|findings|data|observations?)\\b"
+      discussion: "\\b(?:discussion|interpretation|analysis)\\b"
+      conclusion: "\\b(?:conclusion|summary|final)\\b"
+
+    # Content patterns (from paper_processor.py)
+    patterns:
+      compounds: "\\b[A-Z][a-z]?(?:\\d*[A-Z][a-z]?\\d*)*\\b|\\b(?:methane|ethane|benzene|phenol|acetone|toluene)\\b"
+      reactions: "(?:→|←|↔|yields?|react(?:s|ion)|mechanism|pathway)"
+      procedures: "\\b(?:heat(?:ed|ing)?|stir(?:red|ring)?|add(?:ed|ing)?|dissolv(?:ed|ing)?|filter(?:ed|ing)?|distill(?:ed|ing)?|crystalliz(?:ed|ing)?)\\b"
+      conditions: "\\b\\d+\\s*°?[CF]|\\b\\d+\\s*(?:hours?|hrs?|min(?:utes?)?|days?)\\b|\\b(?:reflux|room temperature|ice bath)\\b"
+      theories: "\\b(?:theory|principle|mechanism|model|concept|hypothesis)\\b"
+
+    # Domain classification keywords (from paper_processor.py)
+    subdomain_keywords:
+      organic:
+        - organic
+        - alkane
+        - alkene
+        - aromatic
+        - benzene
+        - carbonyl
+      inorganic:
+        - inorganic
+        - metal
+        - coordination
+        - complex
+        - crystal
+        - ionic
+      physical:
+        - thermodynamics
+        - kinetics
+        - equilibrium
+        - phase
+        - quantum
+      analytical:
+        - analytical
+        - spectroscopy
+        - chromatography
+        - analysis
+      biochemistry:
+        - enzyme
+        - protein
+        - amino acid
+        - metabolism
+
+    # Sample training data (from training_manager.py and enhanced_fine_tuner.py)
+    sample_data:
+      book:
+        - question: "What is benzene?"
+          answer: "Benzene is an aromatic hydrocarbon with formula C6H6."
+        - question: "How are alkanes named?"
+          answer: "Alkanes are named using IUPAC nomenclature."
+      paper:
+        - question: "Who discovered benzene structure?"
+          answer: "Kekulé proposed the benzene ring structure in 1865."
+        - question: "What was the first alkane synthesis?"
+          answer: "Early alkane synthesis used Wurtz reaction."
+      integrated:
+        - question: "How does Kekulé benzene relate to modern understanding?"
+          answer: "Kekulé ring was foundational but modern theory includes resonance and delocalization."
+
+  physics:
+    name: "Physics"
+    description: "Physical sciences including mechanics, electromagnetism, thermodynamics, and quantum mechanics"
+
+    journals:
+      "phys. rev.": "Physical Review"
+      "phys. rev. lett.": "Physical Review Letters"
+      "j. phys.": "Journal of Physics"
+      "nature phys.": "Nature Physics"
+      "science": "Science"
+      "nature": "Nature"
+      "proc. natl. acad. sci.": "Proceedings of the National Academy of Sciences"
+      "ann. phys.": "Annalen der Physik"
+      "z. phys.": "Zeitschrift für Physik"
+      "phys. today": "Physics Today"
+      "rev. mod. phys.": "Reviews of Modern Physics"
+
+    keywords:
+      - physics
+      - physical
+      - mechanics
+      - electromagnetic
+      - quantum
+      - relativity
+      - energy
+      - momentum
+      - force
+      - field
+      - wave
+      - particle
+      - radiation
+      - thermodynamics
+      - statistical
+      - nuclear
+      - atomic
+      - molecular
+      - condensed matter
+      - plasma
+
+    foundational_authors:
+      - einstein
+      - newton
+      - maxwell
+      - planck
+      - bohr
+      - heisenberg
+      - schrödinger
+      - schrodinger
+      - dirac
+      - feynman
+      - pauli
+      - born
+      - fermi
+      - curie
+      - rutherford
+      - thomson
+      - millikan
+      - compton
+      - michelson
+      - morley
+      - faraday
+      - ampère
+      - ampere
+      - gauss
+      - coulomb
+      - ohm
+      - joule
+      - kelvin
+      - carnot
+      - boltzmann
+      - gibbs
+
+    contexts:
+      mechanics:
+        - mechanics
+        - motion
+        - force
+        - acceleration
+        - momentum
+        - energy
+        - conservation
+        - newton
+        - lagrangian
+        - hamiltonian
+      electromagnetics:
+        - electromagnetic
+        - electric
+        - magnetic
+        - field
+        - charge
+        - current
+        - voltage
+        - maxwell
+        - faraday
+        - ampere
+      quantum:
+        - quantum
+        - wave function
+        - eigenvalue
+        - operator
+        - uncertainty
+        - superposition
+        - entanglement
+        - measurement
+        - probability
+        - planck
+      thermodynamics:
+        - thermodynamics
+        - temperature
+        - entropy
+        - enthalpy
+        - heat
+        - work
+        - carnot
+        - boltzmann
+        - statistical
+        - partition
+      relativity:
+        - relativity
+        - spacetime
+        - einstein
+        - lorentz
+        - minkowski
+        - curvature
+        - metric
+        - geodesic
+        - equivalence
+        - general
+
+    sections:
+      abstract: "\\b(?:abstract|summary)\\b"
+      introduction: "\\b(?:introduction|background|motivation)\\b"
+      theory: "\\b(?:theory|theoretical|formalism|model)\\b"
+      experimental: "\\b(?:experimental|experiment|measurement|apparatus)\\b"
+      results: "\\b(?:results?|findings|data|observations?)\\b"
+      discussion: "\\b(?:discussion|interpretation|analysis|implications)\\b"
+      conclusion: "\\b(?:conclusion|summary|outlook)\\b"
+
+    patterns:
+      equations: "\\b(?:equation|formula|relation|law)\\b"
+      measurements: "\\b(?:measure|measurement|experiment|observation|data)\\b"
+      constants: "\\b(?:constant|invariant|universal|fundamental)\\b"
+      phenomena: "\\b(?:phenomenon|effect|interaction|process|mechanism)\\b"
+      theories: "\\b(?:theory|principle|law|model|framework)\\b"
+
+    subdomain_keywords:
+      classical:
+        - classical
+        - newtonian
+        - mechanics
+        - dynamics
+        - kinematics
+      quantum:
+        - quantum
+        - wave
+        - particle
+        - uncertainty
+        - superposition
+      relativity:
+        - relativity
+        - spacetime
+        - lorentz
+        - einstein
+        - curved
+      condensed_matter:
+        - solid
+        - liquid
+        - crystal
+        - phase
+        - transition
+      nuclear:
+        - nuclear
+        - radioactive
+        - decay
+        - fission
+        - fusion
+
+    sample_data:
+      book:
+        - question: "What is Newton's second law?"
+          answer: "Newton's second law states that F = ma, where force equals mass times acceleration."
+        - question: "What is electromagnetic induction?"
+          answer: "Electromagnetic induction is the production of electric current by changing magnetic fields."
+      paper:
+        - question: "Who formulated the uncertainty principle?"
+          answer: "Heisenberg formulated the uncertainty principle in 1927."
+        - question: "What was Einstein's contribution to quantum theory?"
+          answer: "Einstein explained the photoelectric effect using quantum theory."
+      integrated:
+        - question: "How does quantum mechanics relate to classical physics?"
+          answer: "Quantum mechanics reduces to classical physics in the macroscopic limit through correspondence principle."
+
+  mathematics:
+    name: "Mathematics"
+    description: "Mathematical sciences including pure and applied mathematics"
+
+    journals:
+      "ann. math.": "Annals of Mathematics"
+      "j. am. math. soc.": "Journal of the American Mathematical Society"
+      "math. ann.": "Mathematische Annalen"
+      "acta math.": "Acta Mathematica"
+      "invent. math.": "Inventiones Mathematicae"
+      "j. differential geom.": "Journal of Differential Geometry"
+      "adv. math.": "Advances in Mathematics"
+      "comm. pure appl. math.": "Communications on Pure and Applied Mathematics"
+      "duke math. j.": "Duke Mathematical Journal"
+      "j. algebra": "Journal of Algebra"
+
+    keywords:
+      - mathematics
+      - mathematical
+      - theorem
+      - proof
+      - lemma
+      - corollary
+      - conjecture
+      - algebra
+      - geometry
+      - topology
+      - analysis
+      - calculus
+      - differential
+      - integral
+      - function
+      - equation
+      - matrix
+      - vector
+      - space
+      - group
+      - ring
+      - field
+
+    foundational_authors:
+      - euclid
+      - newton
+      - leibniz
+      - euler
+      - gauss
+      - riemann
+      - cauchy
+      - weierstrass
+      - cantor
+      - hilbert
+      - poincaré
+      - poincare
+      - noether
+      - gödel
+      - godel
+      - turing
+      - von neumann
+      - hardy
+      - ramanujan
+      - fermat
+      - descartes
+      - pascal
+      - fibonacci
+      - archimedes
+      - pythagoras
+      - galois
+      - abel
+      - jacobi
+      - legendre
+      - laplace
+
+    contexts:
+      algebra:
+        - algebra
+        - algebraic
+        - group
+        - ring
+        - field
+        - polynomial
+        - equation
+        - solution
+        - structure
+        - homomorphism
+      geometry:
+        - geometry
+        - geometric
+        - triangle
+        - circle
+        - polygon
+        - angle
+        - distance
+        - coordinate
+        - transformation
+        - symmetry
+      analysis:
+        - analysis
+        - analytic
+        - function
+        - derivative
+        - integral
+        - limit
+        - continuity
+        - convergence
+        - series
+        - sequence
+      topology:
+        - topology
+        - topological
+        - space
+        - continuous
+        - homeomorphism
+        - manifold
+        - homotopy
+        - homology
+        - fundamental
+        - group
+      number_theory:
+        - number
+        - prime
+        - integer
+        - rational
+        - irrational
+        - transcendental
+        - congruence
+        - modular
+        - arithmetic
+        - divisibility
+
+    sections:
+      abstract: "\\b(?:abstract|summary)\\b"
+      introduction: "\\b(?:introduction|motivation|background)\\b"
+      preliminaries: "\\b(?:preliminaries|definitions|notation)\\b"
+      main_results: "\\b(?:main results?|theorems?|propositions?)\\b"
+      proofs: "\\b(?:proof|proofs|demonstration)\\b"
+      examples: "\\b(?:examples?|applications?|illustrations?)\\b"
+      conclusion: "\\b(?:conclusion|remarks?|discussion)\\b"
+
+    patterns:
+      theorems: "\\b(?:theorem|lemma|proposition|corollary|conjecture)\\b"
+      proofs: "\\b(?:proof|prove|demonstration|establish|show)\\b"
+      equations: "\\b(?:equation|formula|relation|identity)\\b"
+      functions: "\\b(?:function|mapping|transformation|operator)\\b"
+      structures: "\\b(?:structure|space|algebra|category|object)\\b"
+
+    subdomain_keywords:
+      pure:
+        - pure
+        - abstract
+        - theoretical
+        - axiom
+        - definition
+      applied:
+        - applied
+        - computational
+        - numerical
+        - modeling
+        - simulation
+      discrete:
+        - discrete
+        - combinatorics
+        - graph
+        - algorithm
+        - complexity
+      continuous:
+        - continuous
+        - differential
+        - integral
+        - smooth
+        - manifold
+      statistical:
+        - probability
+        - statistics
+        - random
+        - stochastic
+        - distribution
+
+    sample_data:
+      book:
+        - question: "What is the Pythagorean theorem?"
+          answer: "The Pythagorean theorem states that in a right triangle, a² + b² = c²."
+        - question: "What is a derivative?"
+          answer: "A derivative measures the rate of change of a function with respect to its variable."
+      paper:
+        - question: "Who proved Fermat's Last Theorem?"
+          answer: "Andrew Wiles proved Fermat's Last Theorem in 1995."
+        - question: "What is the fundamental theorem of calculus?"
+          answer: "The fundamental theorem of calculus connects differentiation and integration."
+      integrated:
+        - question: "How do pure and applied mathematics relate?"
+          answer: "Pure mathematics provides theoretical foundations that applied mathematics uses to solve practical problems."
+
+  biology:
+    name: "Biology"
+    description: "Biological sciences including molecular biology, genetics, ecology, and evolution"
+
+    journals:
+      "nature": "Nature"
+      "science": "Science"
+      "cell": "Cell"
+      "proc. natl. acad. sci.": "Proceedings of the National Academy of Sciences"
+      "j. mol. biol.": "Journal of Molecular Biology"
+      "j. biol. chem.": "Journal of Biological Chemistry"
+      "biochemistry": "Biochemistry"
+      "genetics": "Genetics"
+      "mol. biol. evol.": "Molecular Biology and Evolution"
+      "ecology": "Ecology"
+      "evolution": "Evolution"
+      "j. exp. biol.": "Journal of Experimental Biology"
+
+    keywords:
+      - biology
+      - biological
+      - organism
+      - cell
+      - molecular
+      - gene
+      - protein
+      - enzyme
+      - dna
+      - rna
+      - evolution
+      - natural selection
+      - genetics
+      - heredity
+      - ecosystem
+      - species
+      - population
+      - metabolism
+      - biochemistry
+      - physiology
+      - anatomy
+      - taxonomy
+
+    foundational_authors:
+      - darwin
+      - mendel
+      - watson
+      - crick
+      - franklin
+      - wilkins
+      - morgan
+      - mcclintock
+      - flemming
+      - pasteur
+      - leeuwenhoek
+      - linnaeus
+      - lamarck
+      - wallace
+      - huxley
+      - dobzhansky
+      - mayr
+      - hamilton
+      - fisher
+      - wright
+      - haldane
+      - kimura
+      - wilson
+      - hamilton
+      - trivers
+
+    contexts:
+      molecular:
+        - molecular
+        - gene
+        - dna
+        - rna
+        - protein
+        - enzyme
+        - transcription
+        - translation
+        - replication
+        - mutation
+      cellular:
+        - cellular
+        - cell
+        - membrane
+        - nucleus
+        - cytoplasm
+        - mitochondria
+        - chloroplast
+        - division
+        - cycle
+        - signaling
+      genetics:
+        - genetics
+        - heredity
+        - inheritance
+        - allele
+        - chromosome
+        - genome
+        - phenotype
+        - genotype
+        - linkage
+        - recombination
+      evolution:
+        - evolution
+        - natural selection
+        - adaptation
+        - speciation
+        - phylogeny
+        - fossil
+        - common ancestor
+        - divergence
+        - fitness
+        - survival
+      ecology:
+        - ecology
+        - ecosystem
+        - environment
+        - habitat
+        - niche
+        - population
+        - community
+        - biodiversity
+        - conservation
+        - succession
+
+    sections:
+      abstract: "\\b(?:abstract|summary)\\b"
+      introduction: "\\b(?:introduction|background)\\b"
+      methods: "\\b(?:methods?|materials?|experimental)\\b"
+      results: "\\b(?:results?|findings|observations?)\\b"
+      discussion: "\\b(?:discussion|interpretation)\\b"
+      conclusion: "\\b(?:conclusion|implications)\\b"
+
+    patterns:
+      organisms: "\\b(?:species|organism|bacteria|virus|plant|animal)\\b"
+      processes: "\\b(?:process|pathway|mechanism|reaction|cycle)\\b"
+      structures: "\\b(?:structure|anatomy|morphology|organization)\\b"
+      functions: "\\b(?:function|role|activity|behavior|response)\\b"
+      experiments: "\\b(?:experiment|study|analysis|assay|test)\\b"
+
+    subdomain_keywords:
+      molecular:
+        - molecular
+        - biochemistry
+        - genetics
+        - genomics
+        - proteomics
+      cellular:
+        - cellular
+        - cytology
+        - histology
+        - microscopy
+        - culture
+      organismal:
+        - physiology
+        - anatomy
+        - development
+        - reproduction
+        - behavior
+      ecological:
+        - ecology
+        - environment
+        - population
+        - community
+        - ecosystem
+      evolutionary:
+        - evolution
+        - phylogeny
+        - taxonomy
+        - paleontology
+        - comparative
+
+    sample_data:
+      book:
+        - question: "What is DNA?"
+          answer: "DNA is the hereditary material that carries genetic information in living organisms."
+        - question: "How does natural selection work?"
+          answer: "Natural selection favors individuals with advantageous traits for survival and reproduction."
+      paper:
+        - question: "Who discovered the structure of DNA?"
+          answer: "Watson, Crick, Franklin, and Wilkins determined the double helix structure of DNA."
+        - question: "What did Mendel discover about inheritance?"
+          answer: "Mendel discovered the basic principles of heredity through pea plant experiments."
+      integrated:
+        - question: "How do molecular mechanisms relate to evolutionary processes?"
+          answer: "Molecular mutations provide the variation upon which natural selection acts in evolution."
+
+  engineering:
+    name: "Engineering"
+    description: "Engineering sciences including mechanical, electrical, civil, and chemical engineering"
+
+    journals:
+      "j. eng. mech.": "Journal of Engineering Mechanics"
+      "ieee trans.": "IEEE Transactions"
+      "asme j.": "ASME Journal"
+      "aiche j.": "AIChE Journal"
+      "chem. eng. sci.": "Chemical Engineering Science"
+      "struct. eng.": "Structural Engineering"
+      "j. fluid mech.": "Journal of Fluid Mechanics"
+      "int. j. heat mass transfer": "International Journal of Heat and Mass Transfer"
+      "nature": "Nature"
+      "science": "Science"
+
+    keywords:
+      - engineering
+      - design
+      - system
+      - process
+      - control
+      - optimization
+      - efficiency
+      - performance
+      - analysis
+      - simulation
+      - modeling
+      - testing
+      - manufacturing
+      - materials
+      - structure
+      - mechanics
+      - dynamics
+      - thermodynamics
+      - fluid
+      - heat
+      - mass transfer
+      - electrical
+      - circuit
+
+    foundational_authors:
+      - tesla
+      - edison
+      - faraday
+      - maxwell
+      - bernoulli
+      - euler
+      - newton
+      - hooke
+      - young
+      - mohr
+      - reynolds
+      - prandtl
+      - navier
+      - stokes
+      - fourier
+      - laplace
+      - carnot
+      - rankine
+      - otto
+      - diesel
+      - watt
+      - stephenson
+      - brunel
+      - eiffel
+      - wright
+
+    contexts:
+      mechanical:
+        - mechanical
+        - machine
+        - mechanism
+        - gear
+        - bearing
+        - shaft
+        - vibration
+        - stress
+        - strain
+        - fatigue
+      electrical:
+        - electrical
+        - circuit
+        - voltage
+        - current
+        - resistance
+        - capacitance
+        - inductance
+        - power
+        - signal
+        - control
+      civil:
+        - civil
+        - structural
+        - construction
+        - building
+        - bridge
+        - foundation
+        - concrete
+        - steel
+        - load
+        - safety
+      chemical:
+        - chemical
+        - process
+        - reactor
+        - separation
+        - distillation
+        - heat exchanger
+        - mass transfer
+        - reaction
+        - catalyst
+        - optimization
+      systems:
+        - systems
+        - control
+        - feedback
+        - stability
+        - response
+        - design
+        - optimization
+        - modeling
+        - simulation
+        - analysis
+
+    sections:
+      abstract: "\\b(?:abstract|summary)\\b"
+      introduction: "\\b(?:introduction|motivation|background)\\b"
+      methodology: "\\b(?:methodology|methods?|approach)\\b"
+      design: "\\b(?:design|development|implementation)\\b"
+      analysis: "\\b(?:analysis|simulation|modeling)\\b"
+      results: "\\b(?:results?|performance|testing)\\b"
+      conclusion: "\\b(?:conclusion|recommendations?)\\b"
+
+    patterns:
+      systems: "\\b(?:system|apparatus|device|equipment|machine)\\b"
+      processes: "\\b(?:process|procedure|method|technique|operation)\\b"
+      parameters: "\\b(?:parameter|variable|factor|coefficient|constant)\\b"
+      performance: "\\b(?:performance|efficiency|optimization|improvement)\\b"
+      materials: "\\b(?:material|component|element|structure|property)\\b"
+
+    subdomain_keywords:
+      mechanical:
+        - mechanical
+        - thermal
+        - fluid
+        - dynamics
+        - kinematics
+      electrical:
+        - electrical
+        - electronic
+        - circuit
+        - signal
+        - power
+      civil:
+        - civil
+        - structural
+        - geotechnical
+        - transportation
+        - environmental
+      chemical:
+        - chemical
+        - process
+        - biochemical
+        - materials
+        - petroleum
+      computer:
+        - computer
+        - software
+        - algorithm
+        - programming
+        - data
+
+    sample_data:
+      book:
+        - question: "What is mechanical advantage?"
+          answer: "Mechanical advantage is the ratio of output force to input force in a machine."
+        - question: "What is Ohm's law?"
+          answer: "Ohm's law states that voltage equals current times resistance (V = IR)."
+      paper:
+        - question: "Who invented the transistor?"
+          answer: "The transistor was invented by Bardeen, Brattain, and Shockley at Bell Labs."
+        - question: "What was the first engineering application of feedback control?"
+          answer: "James Watt's steam engine governor was an early feedback control system."
+      integrated:
+        - question: "How do theoretical principles apply to practical engineering?"
+          answer: "Theoretical principles provide the foundation for designing efficient and safe engineering systems."

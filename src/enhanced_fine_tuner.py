@@ -1,6 +1,7 @@
 """
 Enhanced fine-tuning controller for integrated book + paper knowledge.
 Multi-stage approach optimized for 4GB VRAM with aggressive memory management.
+Supports multiple academic domains through configuration.
 """
 
 import torch
@@ -621,31 +622,58 @@ if __name__ == "__main__":
     # Example usage
     fine_tuner = IntegratedFineTuner()
 
-    # Example data (normally loaded from processed books and papers)
+    # Example data using domain configuration
+    from domain_config import get_domain_config
+
+    domain_config = get_domain_config()
+
+    # Get sample data from domain configuration
+    book_samples = domain_config.get_sample_data('book')
+    paper_samples = domain_config.get_sample_data('paper')
+    integrated_samples = domain_config.get_sample_data('integrated')
+
     book_qa_data = [
         {
-            'question': 'What is the structure of benzene?',
-            'answer': 'Benzene has a hexagonal ring structure with alternating double bonds.',
+            'question': sample['question'],
+            'answer': sample['answer'],
+            'knowledge_type': 'book_knowledge'
+        } for sample in book_samples
+    ] if book_samples else [
+        {
+            'question': 'Sample book question?',
+            'answer': 'Sample book answer.',
             'knowledge_type': 'book_knowledge'
         }
     ]
 
     paper_qa_data = [
         {
-            'question': 'How did Kekulé propose the benzene structure?',
-            'answer': 'Kekulé proposed benzene as a hexagonal ring with alternating single and double bonds.',
+            'question': sample['question'],
+            'answer': sample['answer'],
+            'knowledge_type': 'paper_knowledge'
+        } for sample in paper_samples
+    ] if paper_samples else [
+        {
+            'question': 'Sample paper question?',
+            'answer': 'Sample paper answer.',
             'knowledge_type': 'paper_knowledge'
         }
     ]
 
     integrated_qa_data = [
         {
-            'question': 'How does Kekulé\'s original proposal relate to modern understanding of benzene?',
-            'answer': 'Kekulé\'s ring structure was foundational, though we now understand benzene has delocalized electrons rather than alternating bonds.',
+            'question': sample['question'],
+            'answer': sample['answer'],
+            'knowledge_type': 'integration_knowledge'
+        } for sample in integrated_samples
+    ] if integrated_samples else [
+        {
+            'question': 'Sample integrated question?',
+            'answer': 'Sample integrated answer.',
             'knowledge_type': 'integration_knowledge'
         }
     ]
 
     print("Enhanced Fine-Tuner initialized")
     print(f"Configuration: {fine_tuner.config}")
-    print("Ready for multi-stage training of integrated chemistry knowledge")
+    print(f"Ready for multi-stage training of integrated {domain_config.current_domain} knowledge")

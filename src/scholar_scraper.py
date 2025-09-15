@@ -1,6 +1,7 @@
 """
-Google Scholar scraper for chemistry DOI lookup.
-Specialized for finding foundational chemistry papers with robust rate limiting.
+Google Scholar scraper for academic DOI lookup.
+Specialized for finding foundational academic papers with robust rate limiting.
+Supports multiple academic domains through configuration.
 """
 
 import requests
@@ -14,6 +15,7 @@ from urllib.parse import quote, urljoin, urlparse
 import json
 from pathlib import Path
 from dataclasses import dataclass
+from domain_config import get_domain_config
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -35,8 +37,9 @@ class ScholarResult:
 
 class ScholarScraper:
     """
-    Google Scholar scraper optimized for chemistry paper DOI lookup.
-    Handles rate limiting and provides chemistry-specific validation.
+    Google Scholar scraper optimized for academic paper DOI lookup.
+    Handles rate limiting and provides domain-specific validation.
+    Supports multiple academic domains through configuration.
     """
 
     # User agents for rotation
@@ -48,47 +51,9 @@ class ScholarScraper:
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:89.0) Gecko/20100101 Firefox/89.0'
     ]
 
-    # Chemistry journal abbreviation expansions
-    CHEMISTRY_ABBREVIATIONS = {
-        "j. am. chem. soc.": "journal american chemical society",
-        "j.am.chem.soc.": "journal american chemical society",
-        "jacs": "journal american chemical society",
-        "angew. chem.": "angewandte chemie international edition",
-        "angew.chem.": "angewandte chemie international edition",
-        "ber. dtsch. chem. ges.": "berichte deutschen chemischen gesellschaft",
-        "ber.dtsch.chem.ges.": "berichte deutschen chemischen gesellschaft",
-        "ber.": "berichte deutschen chemischen gesellschaft",
-        "j. org. chem.": "journal organic chemistry",
-        "j.org.chem.": "journal organic chemistry",
-        "j. phys. chem.": "journal physical chemistry",
-        "j.phys.chem.": "journal physical chemistry",
-        "chem. rev.": "chemical reviews",
-        "chem.rev.": "chemical reviews",
-        "tetrahedron lett.": "tetrahedron letters",
-        "tetrahedron": "tetrahedron",
-        "chem. comm.": "chemical communications",
-        "chem. commun.": "chemical communications",
-        "j. chem. phys.": "journal chemical physics",
-        "j.chem.phys.": "journal chemical physics",
-        "nature": "nature",
-        "science": "science",
-        "proc. natl. acad. sci.": "proceedings national academy sciences",
-        "ann. chem.": "annalen der chemie",
-        "liebigs ann.": "liebigs annalen chemie",
-        "j. chem. soc.": "journal chemical society",
-        "j.chem.soc.": "journal chemical society",
-        "acc. chem. res.": "accounts chemical research"
-    }
+    # Domain configuration will be loaded on initialization
 
-    # Chemistry keywords for validation
-    CHEMISTRY_KEYWORDS = [
-        'chemistry', 'chemical', 'molecule', 'molecular', 'reaction', 'synthesis',
-        'organic', 'inorganic', 'physical chemistry', 'analytical chemistry',
-        'catalyst', 'catalysis', 'bond', 'electron', 'atom', 'compound',
-        'structure', 'spectroscopy', 'thermodynamics', 'kinetics', 'mechanism'
-    ]
-
-    def __init__(self, delay_range: Tuple[int, int] = (2, 5), cache_dir: str = "data/cache"):
+    def __init__(self, delay_range: Tuple[int, int] = (2, 5), cache_dir: str = "data/cache", domain: str = None):
         self.delay_range = delay_range
         self.cache_dir = Path(cache_dir)
         self.cache_dir.mkdir(parents=True, exist_ok=True)
@@ -97,27 +62,24 @@ class ScholarScraper:
         self.rate_limit_delays = [10, 30, 60, 120, 300]  # Progressive delays
         self.current_delay_index = 0
 
-    def expand_chemistry_journal_abbreviations(self, citation: str) -> str:
+        # Load domain configuration
+        self.domain_config = get_domain_config()
+        if domain:
+            self.domain_config.set_domain(domain)
+
+        logger.info(f"Scholar scraper initialized for domain: {self.domain_config.current_domain}")
+
+    def expand_journal_abbreviations(self, citation: str) -> str:
         """Expand journal abbreviations for better search results."""
-
-        citation_lower = citation.lower()
-        expanded = citation
-
-        for abbrev, full_name in self.CHEMISTRY_ABBREVIATIONS.items():
-            if abbrev in citation_lower:
-                # Replace abbreviation with full name
-                expanded = re.sub(re.escape(abbrev), full_name, expanded, flags=re.IGNORECASE)
-                break
-
-        return expanded
+        return self.domain_config.expand_journal_abbreviations(citation)
 
     def clean_citation_for_search(self, citation_text: str, context: str = "") -> List[str]:
-        """Generate multiple search queries for chemistry citations."""
+        """Generate multiple search queries for academic citations."""
 
         queries = []
 
         # Strategy 1: Expand journal abbreviations
-        expanded = self.expand_chemistry_journal_abbreviations(citation_text)
+        expanded = self.expand_journal_abbreviations(citation_text)
         queries.append(expanded)
 
         # Strategy 2: Extract author + year pattern
@@ -377,23 +339,18 @@ class ScholarScraper:
 
         return None
 
-    def validate_chemistry_paper_match(self, result: ScholarResult, original_citation: str, context: str = "") -> float:
-        """Validate that Scholar result matches the chemistry citation."""
+    def validate_domain_paper_match(self, result: ScholarResult, original_citation: str, context: str = "") -> float:
+        """Validate that Scholar result matches the domain citation."""
 
         score = 0.0
 
-        # Title chemistry relevance (0-0.3)
-        title_lower = result.title.lower()
-        chemistry_word_count = sum(1 for keyword in self.CHEMISTRY_KEYWORDS if keyword in title_lower)
-        if chemistry_word_count > 0:
-            score += min(0.3, chemistry_word_count * 0.1)
+        # Title domain relevance (0-0.3)
+        title_relevance = self.domain_config.validate_domain_relevance(result.title)
+        score += title_relevance * 0.3
 
-        # Publication chemistry relevance (0-0.2)
-        pub_lower = result.publication.lower()
-        if any(journal in pub_lower for journal in self.CHEMISTRY_ABBREVIATIONS.values()):
-            score += 0.2
-        elif any(word in pub_lower for word in ['chemistry', 'chemical']):
-            score += 0.15
+        # Publication domain relevance (0-0.2)
+        pub_score = self.domain_config.get_journal_impact_score(result.publication)
+        score += pub_score * 0.2
 
         # Author matching (0-0.2)
         if result.authors:
@@ -470,7 +427,7 @@ class ScholarScraper:
 
                 # Validate each result
                 for result in results:
-                    result.validation_score = self.validate_chemistry_paper_match(result, citation_text, context)
+                    result.validation_score = self.validate_domain_paper_match(result, citation_text, context)
 
                 all_results.extend(results)
 
@@ -616,15 +573,19 @@ if __name__ == "__main__":
     # Example usage
     scraper = ScholarScraper()
 
-    # Test citations
+    # Get sample data from domain configuration
+    domain_config = get_domain_config()
+    sample_papers = domain_config.get_sample_data('paper')
+
+    # Create test citations from sample data
     test_citations = [
         {
-            'citation_text': 'J. Am. Chem. Soc. 53, 1367 (1931)',
-            'context': 'The concept of resonance was first introduced by Pauling'
+            'citation_text': 'Sample Citation 1 (1931)',
+            'context': sample_papers[0]['question'] if sample_papers else 'Sample context'
         },
         {
-            'citation_text': 'Pauling, L. The Nature of the Chemical Bond; Cornell University Press: Ithaca, 1939',
-            'context': 'comprehensive work on chemical bonding theory'
+            'citation_text': 'Sample Citation 2 (1939)',
+            'context': sample_papers[1]['question'] if len(sample_papers) > 1 else 'Sample context'
         }
     ]
 

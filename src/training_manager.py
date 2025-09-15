@@ -1,6 +1,7 @@
 """
-Training abstraction layer for multi-stage chemistry model training.
+Training abstraction layer for multi-stage academic model training.
 Handles both cloud and local environments with budget constraints under $10.
+Supports multiple academic domains through configuration.
 """
 
 import torch
@@ -392,7 +393,7 @@ class UniversalMultiStageTrainer:
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.start_time = None
 
-    def train_chemistry_model_multistage(self,
+    def train_academic_model_multistage(self,
                                        book_data: Dataset,
                                        paper_data: Dataset,
                                        integrated_data: Dataset) -> Dict:
@@ -407,7 +408,7 @@ class UniversalMultiStageTrainer:
             raise Exception(f"Estimated cost ${total_cost:.2f} exceeds budget ${self.resource_manager.budget_limit:.2f}")
 
         logger.info("=" * 60)
-        logger.info("MULTI-STAGE CHEMISTRY MODEL TRAINING")
+        logger.info("MULTI-STAGE ACADEMIC MODEL TRAINING")
         logger.info("=" * 60)
         logger.info(f"Environment: {config.name}")
         logger.info(f"Base model: {config.base_model}")
@@ -669,22 +670,34 @@ class UniversalMultiStageTrainer:
         logger.info(f"Training results saved to: {output_file}")
 
 
-def create_sample_datasets() -> Tuple[Dataset, Dataset, Dataset]:
-    """Create sample datasets for testing."""
+def create_sample_datasets(domain: str = None) -> Tuple[Dataset, Dataset, Dataset]:
+    """Create sample datasets for testing using domain configuration."""
 
+    from domain_config import get_domain_config
+
+    domain_config = get_domain_config()
+    if domain:
+        domain_config.set_domain(domain)
+
+    # Get sample data from domain configuration
+    book_samples = domain_config.get_sample_data('book')
+    paper_samples = domain_config.get_sample_data('paper')
+    integrated_samples = domain_config.get_sample_data('integrated')
+
+    # Create datasets from sample data
     book_data = Dataset.from_dict({
-        'question': ['What is benzene?', 'How are alkanes named?'],
-        'answer': ['Benzene is an aromatic hydrocarbon with formula C6H6.', 'Alkanes are named using IUPAC nomenclature.']
+        'question': [item['question'] for item in book_samples] if book_samples else ['Sample book question?'],
+        'answer': [item['answer'] for item in book_samples] if book_samples else ['Sample book answer.']
     })
 
     paper_data = Dataset.from_dict({
-        'question': ['Who discovered benzene structure?', 'What was the first alkane synthesis?'],
-        'answer': ['Kekulé proposed the benzene ring structure in 1865.', 'Early alkane synthesis used Wurtz reaction.']
+        'question': [item['question'] for item in paper_samples] if paper_samples else ['Sample paper question?'],
+        'answer': [item['answer'] for item in paper_samples] if paper_samples else ['Sample paper answer.']
     })
 
     integrated_data = Dataset.from_dict({
-        'question': ['How does Kekulé benzene relate to modern understanding?'],
-        'answer': ['Kekulé ring was foundational but modern theory includes resonance and delocalization.']
+        'question': [item['question'] for item in integrated_samples] if integrated_samples else ['Sample integrated question?'],
+        'answer': [item['answer'] for item in integrated_samples] if integrated_samples else ['Sample integrated answer.']
     })
 
     return book_data, paper_data, integrated_data

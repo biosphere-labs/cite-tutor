@@ -1,6 +1,7 @@
 """
-Paper processing module that treats retrieved papers as foundational chemistry knowledge.
-Focuses on pre-1960s papers as original sources of chemical discoveries.
+Paper processing module that treats retrieved papers as foundational academic knowledge.
+Focuses on pre-1960s papers as original sources of academic discoveries.
+Supports multiple academic domains through configuration.
 """
 
 import torch
@@ -17,6 +18,7 @@ from dataclasses import dataclass
 
 from pdf_processor import PDFExtractor
 from structure_detector import MemoryManager
+from domain_config import get_domain_config
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -30,7 +32,7 @@ class PaperKnowledge:
     content: str
     source_section: str
     historical_significance: str
-    chemistry_domain: str
+    academic_domain: str
     confidence_score: float
 
 
@@ -42,18 +44,19 @@ class QAPair:
     knowledge_type: str
     source_type: str
     historical_context: str
-    chemistry_domain: str
+    academic_domain: str
     confidence_score: float
     sources: List[str]
 
 
 class CoreKnowledgeProcessor:
     """
-    Processes retrieved chemistry papers as foundational knowledge sources.
+    Processes retrieved academic papers as foundational knowledge sources.
     Treats pre-1960s papers as original discoveries, not supporting evidence.
+    Supports multiple academic domains through configuration.
     """
 
-    def __init__(self, config_path: str = "config/models.yaml"):
+    def __init__(self, config_path: str = "config/models.yaml", domain: str = None):
         self.config = self._load_config(config_path)
         self.memory_manager = MemoryManager(
             safety_buffer_mb=self.config.get("memory_limits", {}).get("safety_buffer_mb", 512)
@@ -65,24 +68,12 @@ class CoreKnowledgeProcessor:
         self.model = None
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        # Chemistry knowledge patterns
-        self.chemistry_sections = {
-            'abstract': re.compile(r'\b(?:abstract|summary)\b', re.IGNORECASE),
-            'introduction': re.compile(r'\b(?:introduction|background|previous work)\b', re.IGNORECASE),
-            'experimental': re.compile(r'\b(?:experimental|methods?|procedure|preparation|synthesis)\b', re.IGNORECASE),
-            'results': re.compile(r'\b(?:results?|findings|data|observations?)\b', re.IGNORECASE),
-            'discussion': re.compile(r'\b(?:discussion|interpretation|analysis)\b', re.IGNORECASE),
-            'conclusion': re.compile(r'\b(?:conclusion|summary|final)\b', re.IGNORECASE),
-        }
+        # Load domain configuration
+        self.domain_config = get_domain_config()
+        if domain:
+            self.domain_config.set_domain(domain)
 
-        # Chemistry content patterns
-        self.chemistry_patterns = {
-            'compounds': re.compile(r'\b[A-Z][a-z]?(?:\d*[A-Z][a-z]?\d*)*\b|\b(?:methane|ethane|benzene|phenol|acetone|toluene)\b', re.IGNORECASE),
-            'reactions': re.compile(r'(?:→|←|↔|yields?|react(?:s|ion)|mechanism|pathway)', re.IGNORECASE),
-            'procedures': re.compile(r'\b(?:heat(?:ed|ing)?|stir(?:red|ring)?|add(?:ed|ing)?|dissolv(?:ed|ing)?|filter(?:ed|ing)?|distill(?:ed|ing)?|crystalliz(?:ed|ing)?)\b', re.IGNORECASE),
-            'conditions': re.compile(r'\b\d+\s*°?[CF]|\b\d+\s*(?:hours?|hrs?|min(?:utes?)?|days?)\b|\b(?:reflux|room temperature|ice bath)\b', re.IGNORECASE),
-            'theories': re.compile(r'\b(?:theory|principle|mechanism|model|concept|hypothesis)\b', re.IGNORECASE),
-        }
+        logger.info(f"Core knowledge processor initialized for domain: {self.domain_config.current_domain}")
 
         # Historical significance keywords
         self.historical_keywords = {
@@ -153,21 +144,16 @@ class CoreKnowledgeProcessor:
         self.memory_manager.clear_memory()
         logger.info("Model unloaded to free memory")
 
-    def analyze_chemistry_paper_structure(self, paper_text: str) -> Dict:
-        """Structure analysis specialized for chemistry papers."""
+    def analyze_academic_paper_structure(self, paper_text: str) -> Dict:
+        """Structure analysis specialized for academic papers."""
 
         # Split paper into paragraphs for analysis
         paragraphs = [p.strip() for p in re.split(r'\n\s*\n', paper_text) if p.strip()]
 
-        sections = {
-            'abstract': '',
-            'introduction': '',
-            'experimental': '',
-            'results': '',
-            'discussion': '',
-            'conclusion': '',
-            'references': ''
-        }
+        # Get section patterns from domain configuration
+        section_patterns = self.domain_config.get_sections()
+        sections = {name: '' for name in section_patterns.keys()}
+        sections['references'] = ''  # Always include references
 
         # Classify paragraphs into sections using pattern matching
         for paragraph in paragraphs:
@@ -175,55 +161,79 @@ class CoreKnowledgeProcessor:
 
             # Determine section based on keywords and position
             classified = False
-            for section_name, pattern in self.chemistry_sections.items():
-                if pattern.search(paragraph_lower) and not classified:
-                    sections[section_name] += paragraph + '\n\n'
-                    classified = True
-                    break
+            for section_name in section_patterns.keys():
+                try:
+                    pattern = self.domain_config.get_compiled_pattern(section_name)
+                    if pattern.search(paragraph_lower) and not classified:
+                        sections[section_name] += paragraph + '\n\n'
+                        classified = True
+                        break
+                except:
+                    continue
 
             # If no specific section found, add to introduction (common for older papers)
             if not classified:
-                sections['introduction'] += paragraph + '\n\n'
+                intro_key = 'introduction' if 'introduction' in sections else list(sections.keys())[0]
+                sections[intro_key] += paragraph + '\n\n'
 
-        # Extract chemistry-specific content
-        chemistry_content = {
-            'compounds_synthesized': self._extract_compounds(paper_text),
-            'reactions_described': self._extract_reactions(paper_text),
+        # Extract domain-specific content
+        domain_content = {
+            'entities_mentioned': self._extract_domain_entities(paper_text),
+            'processes_described': self._extract_processes(paper_text),
             'mechanisms_proposed': self._extract_mechanisms(paper_text),
-            'experimental_procedures': self._extract_procedures(paper_text),
+            'procedures': self._extract_procedures(paper_text),
             'theoretical_frameworks': self._extract_theories(paper_text),
             'historical_context': self._extract_historical_context(paper_text)
         }
 
-        return {**sections, 'chemistry_content': chemistry_content}
+        return {**sections, 'domain_content': domain_content}
 
-    def _extract_compounds(self, text: str) -> List[str]:
-        """Extract chemical compounds mentioned in the paper."""
-        compounds = set()
+    def _extract_domain_entities(self, text: str) -> List[str]:
+        """Extract domain-specific entities mentioned in the paper."""
+        entities = set()
 
-        # Find chemical formulas and common compound names
-        matches = self.chemistry_patterns['compounds'].findall(text)
-        compounds.update(matches)
+        # Try to get domain-specific patterns
+        try:
+            # Look for compound patterns if available (chemistry domain)
+            compounds_pattern = self.domain_config.get_compiled_pattern('compounds')
+            matches = compounds_pattern.findall(text)
+            entities.update(matches)
+        except:
+            # If no specific patterns, extract capitalized terms
+            import re
+            capitalized_terms = re.findall(r'\b[A-Z][a-z]+\b', text)
+            entities.update(capitalized_terms[:20])
 
         # Filter out common false positives
-        false_positives = {'The', 'And', 'For', 'All', 'One', 'Two', 'New', 'Old', 'It', 'In'}
-        compounds = compounds - false_positives
+        false_positives = {'The', 'And', 'For', 'All', 'One', 'Two', 'New', 'Old', 'It', 'In', 'This', 'That'}
+        entities = entities - false_positives
 
-        return list(compounds)[:20]  # Limit to top 20
+        return list(entities)[:20]  # Limit to top 20
 
-    def _extract_reactions(self, text: str) -> List[str]:
-        """Extract reaction descriptions from the paper."""
-        reactions = []
+    def _extract_processes(self, text: str) -> List[str]:
+        """Extract process descriptions from the paper."""
+        processes = []
 
-        # Find sentences containing reaction indicators
+        # Find sentences containing process indicators
         sentences = re.split(r'[.!?]+', text)
-        for sentence in sentences:
-            if self.chemistry_patterns['reactions'].search(sentence):
-                cleaned = sentence.strip()
-                if len(cleaned) > 20 and len(cleaned) < 300:  # Reasonable length
-                    reactions.append(cleaned)
+        try:
+            # Try domain-specific process patterns
+            reactions_pattern = self.domain_config.get_compiled_pattern('reactions')
+            for sentence in sentences:
+                if reactions_pattern.search(sentence):
+                    cleaned = sentence.strip()
+                    if len(cleaned) > 20 and len(cleaned) < 300:  # Reasonable length
+                        processes.append(cleaned)
+        except:
+            # Fallback to generic process indicators
+            process_keywords = ['process', 'method', 'procedure', 'technique', 'approach']
+            for sentence in sentences:
+                if any(keyword in sentence.lower() for keyword in process_keywords):
+                    cleaned = sentence.strip()
+                    if len(cleaned) > 20 and len(cleaned) < 300:
+                        processes.append(cleaned)
 
-        return reactions[:10]  # Limit to top 10
+        return processes[:10]  # Limit to top 10
 
     def _extract_mechanisms(self, text: str) -> List[str]:
         """Extract mechanism discussions from the paper."""
@@ -247,10 +257,21 @@ class CoreKnowledgeProcessor:
 
         # Find paragraphs with procedural language
         paragraphs = re.split(r'\n\s*\n', text)
-        for paragraph in paragraphs:
-            if self.chemistry_patterns['procedures'].search(paragraph):
-                # Check if it contains experimental conditions
-                if self.chemistry_patterns['conditions'].search(paragraph):
+        try:
+            # Try domain-specific procedure patterns
+            procedures_pattern = self.domain_config.get_compiled_pattern('procedures')
+            conditions_pattern = self.domain_config.get_compiled_pattern('conditions')
+
+            for paragraph in paragraphs:
+                if procedures_pattern.search(paragraph):
+                    # Check if it contains experimental conditions
+                    if conditions_pattern.search(paragraph):
+                        procedures.append(paragraph.strip())
+        except:
+            # Fallback to generic procedure indicators
+            procedure_keywords = ['procedure', 'method', 'experimental', 'analysis', 'measurement']
+            for paragraph in paragraphs:
+                if any(keyword in paragraph.lower() for keyword in procedure_keywords):
                     procedures.append(paragraph.strip())
 
         return procedures[:5]  # Limit to top 5
@@ -261,11 +282,22 @@ class CoreKnowledgeProcessor:
 
         # Find theoretical discussions
         paragraphs = re.split(r'\n\s*\n', text)
-        for paragraph in paragraphs:
-            if self.chemistry_patterns['theories'].search(paragraph):
-                # Check for substantial theoretical content
-                if len(paragraph) > 100:
-                    theories.append(paragraph.strip())
+        try:
+            # Try domain-specific theory patterns
+            theories_pattern = self.domain_config.get_compiled_pattern('theories')
+
+            for paragraph in paragraphs:
+                if theories_pattern.search(paragraph):
+                    # Check for substantial theoretical content
+                    if len(paragraph) > 100:
+                        theories.append(paragraph.strip())
+        except:
+            # Fallback to generic theory indicators
+            theory_keywords = ['theory', 'theoretical', 'model', 'framework', 'principle']
+            for paragraph in paragraphs:
+                if any(keyword in paragraph.lower() for keyword in theory_keywords):
+                    if len(paragraph) > 100:
+                        theories.append(paragraph.strip())
 
         return theories[:3]  # Limit to top 3
 
@@ -391,7 +423,7 @@ class CoreKnowledgeProcessor:
                         knowledge_type='foundational_methodology',
                         source_type='original_paper',
                         historical_context=self._extract_time_period_context(citation_context),
-                        chemistry_domain=self._classify_chemistry_domain(procedure),
+                        academic_domain=self._classify_academic_subdomain(procedure),
                         confidence_score=0.8,
                         sources=['original_experimental_section']
                     ))
@@ -474,7 +506,7 @@ class CoreKnowledgeProcessor:
                         knowledge_type='foundational_theory',
                         source_type='original_paper',
                         historical_context=self._extract_time_period_context(citation_context),
-                        chemistry_domain=self._classify_chemistry_domain(framework),
+                        academic_domain=self._classify_academic_subdomain(framework),
                         confidence_score=0.85,
                         sources=['theoretical_section']
                     ))
@@ -522,7 +554,7 @@ class CoreKnowledgeProcessor:
                     knowledge_type='methodological_innovation',
                     source_type='original_paper',
                     historical_context=self._extract_time_period_context(citation_context),
-                    chemistry_domain=self._classify_chemistry_domain(advance),
+                    academic_domain=self._classify_academic_subdomain(advance),
                     confidence_score=0.8,
                     sources=['methodology_section']
                 ))
@@ -533,60 +565,48 @@ class CoreKnowledgeProcessor:
         """Create questions about discoveries and innovations."""
         qa_pairs = []
 
-        compounds = paper_structure['chemistry_content']['compounds_synthesized']
-        reactions = paper_structure['chemistry_content']['reactions_described']
+        entities = paper_structure['domain_content']['entities_mentioned']
+        processes = paper_structure['domain_content']['processes_described']
 
-        # Discovery questions about compounds
-        if compounds:
-            question = f"What compounds were discovered or synthesized in this work?"
-            answer = f"This foundational work involved the following compounds: {', '.join(compounds[:5])}. These were significant because {self._assess_compound_significance(compounds, citation_context)}."
+        # Discovery questions about domain entities
+        if entities:
+            entity_type = 'entities' if self.domain_config.current_domain != 'chemistry' else 'compounds'
+            question = f"What {entity_type} were discovered or studied in this work?"
+            answer = f"This foundational work involved the following {entity_type}: {', '.join(entities[:5])}. These were significant because {self._assess_entity_significance(entities, citation_context)}."
 
             qa_pairs.append(QAPair(
                 question=question,
                 answer=answer,
-                knowledge_type='chemical_discovery',
+                knowledge_type='domain_discovery',
                 source_type='original_paper',
                 historical_context=self._extract_time_period_context(citation_context),
-                chemistry_domain=self._classify_chemistry_domain(' '.join(compounds)),
+                academic_domain=self._classify_academic_subdomain(' '.join(entities)),
                 confidence_score=0.9,
                 sources=['experimental_results']
             ))
 
-        # Reaction discovery questions
-        if reactions:
-            question = f"What reactions or processes were developed in this work?"
-            answer = f"The key reactions described include: {reactions[0][:200]}... This represented a major advance in synthetic methodology for the time period."
+        # Process discovery questions
+        if processes:
+            process_type = 'processes' if self.domain_config.current_domain != 'chemistry' else 'reactions'
+            question = f"What {process_type} were developed in this work?"
+            answer = f"The key {process_type} described include: {processes[0][:200]}... This represented a major advance in methodology for the time period."
 
             qa_pairs.append(QAPair(
                 question=question,
                 answer=answer,
-                knowledge_type='reaction_discovery',
+                knowledge_type='process_discovery',
                 source_type='original_paper',
                 historical_context=self._extract_time_period_context(citation_context),
-                chemistry_domain='synthetic_chemistry',
+                academic_domain=self._classify_academic_subdomain(processes[0] if processes else ''),
                 confidence_score=0.85,
-                sources=['reaction_descriptions']
+                sources=['process_descriptions']
             ))
 
         return qa_pairs
 
-    def _classify_chemistry_domain(self, text: str) -> str:
-        """Classify chemistry domain based on text content."""
-        text_lower = text.lower()
-
-        domain_keywords = {
-            'organic': ['organic', 'alkane', 'alkene', 'aromatic', 'benzene', 'carbonyl'],
-            'inorganic': ['inorganic', 'metal', 'coordination', 'complex', 'crystal', 'ionic'],
-            'physical': ['thermodynamics', 'kinetics', 'equilibrium', 'phase', 'quantum'],
-            'analytical': ['analytical', 'spectroscopy', 'chromatography', 'analysis'],
-            'biochemistry': ['enzyme', 'protein', 'amino acid', 'metabolism']
-        }
-
-        for domain, keywords in domain_keywords.items():
-            if any(keyword in text_lower for keyword in keywords):
-                return domain
-
-        return 'general'
+    def _classify_academic_subdomain(self, text: str) -> str:
+        """Classify academic subdomain based on text content."""
+        return self.domain_config.classify_subdomain(text)
 
     def _extract_time_period_context(self, citation_context: Dict) -> str:
         """Extract time period context for historical significance."""
@@ -639,14 +659,14 @@ class CoreKnowledgeProcessor:
         else:
             return "advancing experimental methodology"
 
-    def _assess_compound_significance(self, compounds: List[str], context: Dict) -> str:
-        """Assess significance of synthesized compounds."""
-        if len(compounds) > 5:
-            return f"they represented a new class of {len(compounds)} related compounds"
-        elif any(len(c) > 8 for c in compounds):
-            return "they were complex molecules that were difficult to synthesize at the time"
+    def _assess_entity_significance(self, entities: List[str], context: Dict) -> str:
+        """Assess significance of discovered entities."""
+        if len(entities) > 5:
+            return f"they represented a new class of {len(entities)} related entities"
+        elif any(len(e) > 8 for e in entities):
+            return f"they were complex {self.domain_config.current_domain} entities that were difficult to study at the time"
         else:
-            return "they provided new examples of important chemical structures"
+            return f"they provided new examples of important {self.domain_config.current_domain} structures"
 
     def process_retrieved_paper(self, pdf_bytes: bytes, citation_context: Dict) -> Dict:
         """
@@ -661,7 +681,7 @@ class CoreKnowledgeProcessor:
                 raise Exception("Failed to extract text from PDF")
 
             # Analyze paper structure
-            paper_structure = self.analyze_chemistry_paper_structure(paper_text)
+            paper_structure = self.analyze_academic_paper_structure(paper_text)
 
             # Generate foundational Q&A pairs
             qa_pairs = self.generate_foundational_qa_pairs(paper_structure, citation_context)
@@ -689,8 +709,8 @@ class CoreKnowledgeProcessor:
                     'overall_score': quality_score,
                     'text_length': len(paper_text),
                     'sections_found': len([s for s in paper_structure.values() if isinstance(s, str) and s.strip()]),
-                    'chemistry_content_richness': len(paper_structure['chemistry_content']['compounds_synthesized']) +
-                                                 len(paper_structure['chemistry_content']['reactions_described']),
+                    'domain_content_richness': len(paper_structure['domain_content']['entities_mentioned']) +
+                                                 len(paper_structure['domain_content']['processes_described']),
                     'qa_pairs_generated': len(qa_pairs)
                 },
                 'processing_metadata': {
@@ -721,14 +741,14 @@ class CoreKnowledgeProcessor:
         elif total_text > 1000:
             score += 0.1
 
-        # Chemistry content richness (0-0.3)
-        chemistry_content = paper_structure['chemistry_content']
+        # Domain content richness (0-0.3)
+        domain_content = paper_structure['domain_content']
         content_richness = (
-            len(chemistry_content['compounds_synthesized']) * 0.05 +
-            len(chemistry_content['reactions_described']) * 0.08 +
-            len(chemistry_content['mechanisms_proposed']) * 0.1 +
-            len(chemistry_content['experimental_procedures']) * 0.05 +
-            len(chemistry_content['theoretical_frameworks']) * 0.1
+            len(domain_content['entities_mentioned']) * 0.05 +
+            len(domain_content['processes_described']) * 0.08 +
+            len(domain_content['mechanisms_proposed']) * 0.1 +
+            len(domain_content['procedures']) * 0.05 +
+            len(domain_content['theoretical_frameworks']) * 0.1
         )
         score += min(0.3, content_richness)
 

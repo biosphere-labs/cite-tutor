@@ -648,8 +648,8 @@ if __name__ == "__main__":
         print(f"  Type: {citation.citation_type}")
         print(f"  Priority: {citation.retrieval_priority}")
         print(f"  Score: {citation.importance_score:.2f}")
-        print(f"  Context: {citation.chemistry_context}")
-        print(f"  Compounds: {citation.compounds_mentioned}")
+        print(f"  Context: {citation.academic_context}")
+        print(f"  Entities: {citation.entities_mentioned}")
         print()
 
     # Generate summary
