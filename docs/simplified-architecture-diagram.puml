@@ -39,67 +39,67 @@ title <color:#58A6FF><b>Cite-Tutor</b></color>: AI-Powered Academic Research Ass
 !define SECONDARY #F85149
 !define ACCENT #F59E0B
 
-package "Development & Training" as dev_train {
-    [CLI Interface] as cli
-    [Domain Config] as config
-    [AWS Spot Fleet\nTraining] as training
+' Compact 2x2 layout for LinkedIn
+left to right direction
+
+package "Training & Setup" as setup {
+    [AWS Spot Fleet] as training
+    [Multi-Domain\nConfig] as config
+    [Sub-$1 Training] as cost
 }
 
-package "AI Pipeline" as pipeline {
-    [Document\nProcessing] as doc_proc
-    [Citation\nExtraction] as citations
-    [Model\nFine-Tuning] as fine_tune
+package "Core AI Engine" as engine {
+    [Citation\nExtraction] as extract
     [Knowledge\nBase] as kb
+    [Fact\nValidation] as validate
 }
 
-package "Integration Layer" as integration {
-    [MCP Server] as mcp
-    [OpenAI/Claude\nEnhancement] as ai_enhance
-    [Citation\nValidation] as validation
-}
-
-package "User Experience" as ux {
+package "User Interface" as ui {
     [Research\nAssistant] as assistant
-    [Real-time\nPaper Lookup] as lookup
-    [Verified\nResponses] as responses
+    [Real-time\nRetrieval] as retrieval
+    [Verified\nAnswers] as answers
 }
 
-' Main flow connections
-cli --> training : "Configure &\nTrain Models"
-config --> training : "Multi-Domain\nSupport"
-training --> fine_tune : "Cost-Optimized\nGPU Training"
+package "AI Integration" as integration {
+    [MCP Plugin] as mcp
+    [OpenAI/Claude\nEnhancement] as enhance
+    [Citation Tools] as tools
+}
 
-doc_proc --> citations : "Extract &\nValidate"
-citations --> fine_tune : "Training\nData"
-fine_tune --> kb : "Domain\nExpertise"
+' Logical flow connections
+training --> extract : "Trained\nModels"
+config --> extract : "Domain\nPatterns"
+cost --> kb : "Cost-Effective\nTraining"
 
-kb --> mcp : "Trained\nModels"
-mcp --> ai_enhance : "Citation\nCapabilities"
-mcp --> validation : "Fact\nChecking"
+extract --> validate : "Citations"
+kb --> validate : "Knowledge"
+validate --> assistant : "Verified\nData"
 
-ai_enhance --> assistant : "Enhanced\nAI Systems"
-validation --> lookup : "Real-time\nRetrieval"
-lookup --> responses : "Grounded\nAnswers"
+assistant --> retrieval : "Query\nProcessing"
+retrieval --> answers : "Real-time\nLookup"
+validate --> answers : "Fact\nChecking"
 
-note top of dev_train
-**Technical Innovation**
-• Sub-$1 training costs
-• Multi-domain AI system
-• AWS spot fleet automation
+' Integration layer connections
+assistant --> mcp : "Core AI"
+retrieval --> tools : "Lookup API"
+answers --> enhance : "Verified\nResponses"
+
+note top of setup
+**Cost-Optimized Training**
+• AWS Spot Fleet ($0.88)
+• Multi-domain AI
 end note
 
-note right of integration
-**Modern AI Integration**
-• MCP plugin architecture
-• Enhance existing AI systems
-• Citation validation engine
-end note
-
-note bottom of ux
+note top of ui
 **User Value**
-• No citation hallucination
-• Verified academic sources
-• Real-time paper retrieval
+• Real-time retrieval
+• Zero hallucination
+end note
+
+note bottom of integration
+**AI Ecosystem**
+• MCP plugin for OpenAI/Claude
+• Citation enhancement
 end note
 
 @enduml

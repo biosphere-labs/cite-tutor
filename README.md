@@ -8,7 +8,7 @@ Unlike generic AI assistants that hallucinate citations or provide outdated info
 
 ## Architecture Overview
 
-![Cite-Tutor Architecture](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/your-username/cite-tutor/main/architecture.puml)
+![Cite-Tutor Architecture](./docs/assets/Cite-Tutor%20Architecture.png)
 
 **Architecture Components:**
 - **Local Development**: CLI tools, configuration files, training data preparation
