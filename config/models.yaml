@@ -1,0 +1,24 @@
+# 4GB VRAM optimized models
+structure_analysis:
+  model: "google/flan-t5-small"  # 60MB
+  max_memory_mb: 1024
+
+qa_generation:
+  model: "google/flan-t5-small"
+  batch_size: 1
+  max_length: 128
+
+fine_tuning:
+  base_model: "distilgpt2"  # 82MB
+  quantization: "4bit"
+  lora_r: 16
+  lora_alpha: 32
+  batch_size: 1
+  gradient_accumulation: 32
+
+embedding:
+  model: "all-MiniLM-L6-v2"  # 22MB, for RAG
+
+memory_limits:
+  max_gpu_memory_mb: 4096
+  safety_buffer_mb: 512

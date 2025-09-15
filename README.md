@@ -1,0 +1,151 @@
+# Sci-Tutor
+
+This project processes academic PDF books and papers (including scanned documents), extracts citations, retrieves foundational papers via Google Scholar + Sci-Hub, and creates a fine-tuned AI tutoring system with real-time citation lookup capabilities. Optimized for 4GB VRAM GPUs and supports any academic domain.
+
+## Key Features
+
+- PDF processing with OCR for scanned books and papers
+- AI-powered document structure detection
+- Citation extraction and paper retrieval
+- Fine-tuning on domain-specific books + retrieved papers as core knowledge
+- RAG system for real-time citation lookup and tutoring
+- 4GB VRAM optimization throughout
+- Multi-domain support (science, mathematics, engineering, etc.)
+
+## Hardware Requirements
+
+- **GPU**: 4GB VRAM minimum (RTX 1650, GTX 1050 Ti, or better)
+- **RAM**: 8GB+ system memory recommended
+- **Storage**: 10GB+ free space for models and data
+
+## Installation
+
+### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+cd sci-tutor
+```
+
+### 2. Create Conda Environment
+
+```bash
+conda env create -f environment.yml
+conda activate sci-tutor
+```
+
+### 3. Install Package in Development Mode
+
+```bash
+pip install -e .
+```
+
+### 4. Verify GPU Memory
+
+```bash
+python -c "from src.utils.gpu_validator import check_gpu_memory; check_gpu_memory()"
+```
+
+## Project Structure
+
+```
+sci-tutor/
+├── src/
+│   ├── pdf_processor.py           # PDF extraction with OCR
+│   ├── structure_detector.py      # AI document structure (tiny models)
+│   ├── qa_generator.py           # Q&A generation (optimized)
+│   ├── citation_extractor.py     # Extract citations from academic books
+│   ├── scholar_scraper.py        # Google Scholar DOI lookup
+│   ├── scihub_client.py          # Sci-Hub paper retrieval
+│   ├── paper_processor.py        # Process retrieved papers as core knowledge
+│   ├── rag_system.py             # RAG for real-time citation lookup
+│   ├── enhanced_fine_tuner.py    # Multi-stage fine-tuning (4GB optimized)
+│   ├── tutor_ai.py               # Deployment system
+│   └── main_controller.py        # Pipeline orchestrator
+├── config/
+│   └── models.yaml               # 4GB-optimized model configs
+├── tests/
+├── data/
+│   ├── books/                    # Input PDF books
+│   ├── structured/               # Processed book structures
+│   ├── papers/                   # Retrieved papers cache
+│   └── training/                 # Generated training data
+└── outputs/
+    └── models/                   # Fine-tuned models
+```
+
+## Quick Start
+
+1. **Place PDF books** in `data/books/`
+2. **Run the full pipeline**:
+   ```bash
+   python src/main_controller.py --input data/books/ --output outputs/
+   ```
+
+## Memory Optimization
+
+This project is specifically optimized for 4GB VRAM GPUs:
+
+- **Models**: Uses smallest possible models (distilGPT2, FLAN-T5-small, MiniLM)
+- **Quantization**: 4-bit quantization for all fine-tuning
+- **LoRA**: Parameter-efficient fine-tuning
+- **Batch Size**: Optimized batch sizes (typically 1)
+- **Memory Management**: Automatic GPU memory monitoring
+
+## Configuration
+
+Edit `config/models.yaml` to adjust model settings:
+
+- Model selection (always prioritizing smallest models)
+- Memory limits and safety buffers
+- Fine-tuning parameters (LoRA ranks, batch sizes)
+- Quantization settings
+
+## Usage Examples
+
+### Process a Single PDF Book
+```bash
+python src/pdf_processor.py --input "data/books/academic_textbook.pdf" --output "data/structured/"
+```
+
+### Extract Citations
+```bash
+python src/citation_extractor.py --input "data/structured/" --output "data/citations/"
+```
+
+### Fine-tune the AI Model
+```bash
+python src/enhanced_fine_tuner.py --config config/models.yaml --data data/training/
+```
+
+### Start RAG System
+```bash
+python src/rag_system.py --serve --port 8000
+```
+
+## Troubleshooting
+
+### GPU Memory Issues
+- Reduce batch size in `config/models.yaml`
+- Enable 4-bit quantization
+- Monitor memory with built-in utilities
+
+### OCR Problems
+- Ensure Tesseract is installed: `conda install tesseract`
+- Check PDF quality and preprocessing
+
+### Citation Extraction
+- Verify PDF structure detection accuracy
+- Adjust extraction patterns for specific academic formats
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Add tests for new functionality
+4. Ensure 4GB VRAM compatibility
+5. Submit a pull request
+
+## License
+
+MIT License - see LICENSE file for details.
