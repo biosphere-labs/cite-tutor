@@ -138,6 +138,29 @@ python src/rag_system.py --serve --port 8000
 - Verify PDF structure detection accuracy
 - Adjust extraction patterns for specific academic formats
 
+## Documentation
+
+### Core Training & Development Guides
+- [Training Fundamentals](docs/01-training-fundamentals.md)
+- [Model Architectures](docs/02-model-architectures.md)
+- [Training Pipeline](docs/03-training-pipeline.md)
+- [Evaluation & Optimization](docs/04-evaluation-optimization.md)
+- [Production Deployment](docs/05-production-deployment.md)
+- [Debugging & Monitoring](docs/06-debugging-monitoring.md)
+
+### Advanced Topics
+- [Reinforcement Learning Optimization](docs/reinforcement-learning-optimization.md)
+- [Chemistry to Psi Tutor Changes](docs/chemistry-to-psi-tutor-changes.md)
+
+### Assessment Materials
+- [Training Fundamentals Exam](docs/assessments/01-training-fundamentals-exam.md)
+- [Model Architectures Exam](docs/assessments/02-model-architectures-exam.md)
+- [Training Pipeline Exam](docs/assessments/03-training-pipeline-exam.md)
+- [Evaluation & Optimization Exam](docs/assessments/04-evaluation-optimization-exam.md)
+- [Production Deployment Exam](docs/assessments/05-production-deployment-exam.md)
+- [Debugging & Monitoring Exam](docs/assessments/06-debugging-monitoring-exam.md)
+- [Hands-on Challenges](docs/assessments/hands-on-challenges.md)
+
 ## Contributing
 
 1. Fork the repository
