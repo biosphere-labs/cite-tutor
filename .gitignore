@@ -1,1 +1,12 @@
 data/**
+CLAUDE.md
+.claude
+.vscode
+user_data_script
+docs/learning/
+/.idea/.gitignore
+/.idea/cite-tutor.iml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/vcs.xml

@@ -15,8 +15,8 @@ import io
 from PIL import Image
 import numpy as np
 
-from base_test import PDFStandardTestCase
-from pdf_processor import PDFExtractor
+from .base_test import PDFStandardTestCase
+from cite_tutor.pdf_processor import PDFExtractor
 
 
 class TestPDFExtractor(PDFStandardTestCase):

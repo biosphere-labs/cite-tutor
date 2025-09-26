@@ -13,8 +13,8 @@ import json
 from pathlib import Path
 import tempfile
 
-from base_test import MLStandardTestCase
-from paper_processor import CoreKnowledgeProcessor, PaperKnowledge, QAPair
+from .base_test import MLStandardTestCase
+from cite_tutor.paper_processor import CoreKnowledgeProcessor, PaperKnowledge, QAPair
 
 
 class TestPaperKnowledge(unittest.TestCase):

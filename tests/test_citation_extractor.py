@@ -12,8 +12,8 @@ import json
 import tempfile
 from pathlib import Path
 
-from base_test import StandardTestCase
-from citation_extractor import ChemistryCitationExtractor, ChemistryCitation
+from .base_test import StandardTestCase
+from cite_tutor.citation_extractor import ChemistryCitationExtractor, ChemistryCitation
 
 
 class TestChemistryCitation(unittest.TestCase):

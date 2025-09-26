@@ -12,8 +12,8 @@ import json
 import time
 from pathlib import Path
 
-from base_test import NetworkStandardTestCase
-from scholar_scraper import ScholarScraper, ScholarResult
+from .base_test import NetworkStandardTestCase
+from cite_tutor.scholar_scraper import ScholarScraper, ScholarResult
 
 
 class TestScholarResult(unittest.TestCase):

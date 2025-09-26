@@ -48,51 +48,60 @@ git clone <repository-url>
 cd cite-tutor
 ```
 
-### 2. Create Conda Environment
+### 2. Install with UV (Recommended)
+
+```bash
+# Install UV if you haven't already
+pip install uv
+
+# Install dependencies and package
+uv sync --dev
+```
+
+### 3. Alternative: Conda Environment
 
 ```bash
 conda env create -f environment.yml
 conda activate cite-tutor
-```
-
-### 3. Install Package in Development Mode
-
-```bash
 pip install -e .
 ```
 
 ### 4. Verify GPU Memory
 
 ```bash
-python -c "from src.utils.gpu_validator import check_gpu_memory; check_gpu_memory()"
+python -c "from cite_tutor.utils.gpu_validator import check_gpu_memory; check_gpu_memory()"
 ```
 
 ## Project Structure
 
 ```
 cite-tutor/
-├── src/
-│   ├── pdf_processor.py           # PDF extraction with OCR
-│   ├── structure_detector.py      # AI document structure (tiny models)
-│   ├── qa_generator.py           # Q&A generation (optimized)
-│   ├── citation_extractor.py     # Extract citations from academic books
-│   ├── scholar_scraper.py        # Google Scholar DOI lookup
-│   ├── scihub_client.py          # Sci-Hub paper retrieval
-│   ├── paper_processor.py        # Process retrieved papers as core knowledge
-│   ├── rag_system.py             # RAG for real-time citation lookup
-│   ├── enhanced_fine_tuner.py    # Multi-stage fine-tuning (4GB optimized)
-│   ├── tutor_ai.py               # Deployment system
-│   └── main_controller.py        # Pipeline orchestrator
+├── cite_tutor/                   # Main package
+│   ├── __init__.py              # Package initialization
+│   ├── pdf_processor.py         # PDF extraction with OCR
+│   ├── structure_detector.py    # AI document structure (tiny models)
+│   ├── citation_extractor.py   # Extract citations from academic books
+│   ├── scholar_scraper.py      # Google Scholar DOI lookup
+│   ├── scihub_client.py        # Sci-Hub paper retrieval
+│   ├── paper_processor.py      # Process retrieved papers as core knowledge
+│   ├── enhanced_fine_tuner.py  # Multi-stage fine-tuning (4GB optimized)
+│   ├── training_manager.py     # Training pipeline orchestration
+│   └── utils/                   # Utility modules
+│       ├── __init__.py         # Utils package init
+│       └── gpu_validator.py    # GPU memory validation
 ├── config/
-│   └── models.yaml               # 4GB-optimized model configs
-├── tests/
+│   ├── models.yaml             # 4GB-optimized model configs
+│   └── domains.yaml           # Domain-specific configurations
+├── tests/                      # Test suite
 ├── data/
-│   ├── books/                    # Input PDF books
-│   ├── structured/               # Processed book structures
-│   ├── papers/                   # Retrieved papers cache
-│   └── training/                 # Generated training data
-└── outputs/
-    └── models/                   # Fine-tuned models
+│   ├── books/                  # Input PDF books
+│   ├── structured/             # Processed book structures
+│   ├── papers/                 # Retrieved papers cache
+│   └── training/               # Generated training data
+├── outputs/
+│   └── models/                 # Fine-tuned models
+├── pyproject.toml              # UV/Python packaging configuration
+└── README.md                   # This file
 ```
 
 ## Quick Start
@@ -100,7 +109,9 @@ cite-tutor/
 1. **Place PDF books** in `data/books/`
 2. **Run the full pipeline**:
    ```bash
-   python src/main_controller.py --input data/books/ --output outputs/
+   cite-tutor --input data/books/ --output outputs/
+   # Or using Python directly:
+   python -m cite_tutor --input data/books/ --output outputs/
    ```
 
 ## Memory Optimization
@@ -126,22 +137,30 @@ Edit `config/models.yaml` to adjust model settings:
 
 ### Process a Single PDF Book
 ```bash
-python src/pdf_processor.py --input "data/books/academic_textbook.pdf" --output "data/structured/"
+process-pdf --input "data/books/academic_textbook.pdf" --output "data/structured/"
+# Or using UV:
+uv run process-pdf --input "data/books/academic_textbook.pdf" --output "data/structured/"
 ```
 
 ### Extract Citations
 ```bash
-python src/citation_extractor.py --input "data/structured/" --output "data/citations/"
+extract-citations --input "data/structured/" --output "data/citations/"
+# Or using UV:
+uv run extract-citations --input "data/structured/" --output "data/citations/"
 ```
 
 ### Fine-tune the AI Model
 ```bash
-python src/enhanced_fine_tuner.py --config config/models.yaml --data data/training/
+fine-tune --config config/models.yaml --data data/training/
+# Or using UV:
+uv run fine-tune --config config/models.yaml --data data/training/
 ```
 
 ### Start RAG System
 ```bash
-python src/rag_system.py --serve --port 8000
+start-rag --serve --port 8000
+# Or using UV:
+uv run start-rag --serve --port 8000
 ```
 
 ## Troubleshooting

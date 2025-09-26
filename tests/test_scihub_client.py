@@ -14,8 +14,8 @@ from pathlib import Path
 import tempfile
 from datetime import datetime
 
-from base_test import NetworkStandardTestCase
-from scihub_client import SciHubClient
+from .base_test import NetworkStandardTestCase
+from cite_tutor.scihub_client import SciHubClient
 
 
 class TestSciHubClient(NetworkStandardTestCase):

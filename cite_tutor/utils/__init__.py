@@ -1,4 +1,4 @@
-"""Utility functions for sci-tutor project."""
+"""Utility functions for cite-tutor project."""
 
 from .gpu_validator import (
     get_gpu_info,
