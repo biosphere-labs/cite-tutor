@@ -1,10 +1,14 @@
 # Cite-Tutor
 
+> **Status: Experimental / Work in Progress**
+>
+> This project was built as a learning exercise exploring PDF processing, citation extraction, web scraping, ML fine-tuning, and MCP integration. It is not actively maintained but demonstrates the architectural approach to solving AI citation hallucination.
+
 Cite-Tutor is an AI-powered academic research assistant that processes PDF books and papers, extracts and validates citations, retrieves foundational papers via Google Scholar + Sci-Hub, and creates a fine-tuned AI tutoring system with real-time citation lookup capabilities. Optimized for 4GB VRAM GPUs and supports any academic domain.
 
 ## Why Cite-Tutor?
 
-Unlike generic AI assistants that hallucinate citations or provide outdated information, **Cite-Tutor grounds its responses in verified academic sources**. It doesn't just generate answers—it traces knowledge back to original papers, validates citations in real-time, and builds domain expertise from foundational literature. This makes it invaluable for researchers, students, and academics who need **accurate, citable information with provenance**. The system trains on domain-specific books plus retrieved foundational papers, creating AI tutors that understand the historical context and evolution of ideas. Additionally, Cite-Tutor can be deployed as an **MCP (Model Context Protocol) plugin**, allowing integration with primary AI systems like OpenAI or Claude to enhance them with verified academic knowledge and citation capabilities.
+Unlike generic AI assistants that hallucinate citations or provide outdated information, **Cite-Tutor grounds its responses in verified academic sources**. It doesn't just generate answers -- it traces knowledge back to original papers, validates citations in real-time, and builds domain expertise from foundational literature. This makes it invaluable for researchers, students, and academics who need **accurate, citable information with provenance**. The system trains on domain-specific books plus retrieved foundational papers, creating AI tutors that understand the historical context and evolution of ideas. Additionally, Cite-Tutor can be deployed as an **MCP (Model Context Protocol) plugin**, allowing integration with primary AI systems like OpenAI or Claude to enhance them with verified academic knowledge and citation capabilities.
 
 ## Architecture Overview
 
@@ -44,7 +48,7 @@ Unlike generic AI assistants that hallucinate citations or provide outdated info
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/biosphere-labs/cite-tutor.git
 cd cite-tutor
 ```
 
@@ -103,6 +107,8 @@ cite-tutor/
 ├── pyproject.toml              # UV/Python packaging configuration
 └── README.md                   # This file
 ```
+
+**Note:** A `src/` directory exists containing only stale `__pycache__` files from an earlier project layout. The canonical source code lives in `cite_tutor/`.
 
 ## Quick Start
 
@@ -200,14 +206,6 @@ uv run start-rag --serve --port 8000
 - [Production Deployment Exam](docs/assessments/05-production-deployment-exam.md)
 - [Debugging & Monitoring Exam](docs/assessments/06-debugging-monitoring-exam.md)
 - [Hands-on Challenges](docs/assessments/hands-on-challenges.md)
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Ensure 4GB VRAM compatibility
-5. Submit a pull request
 
 ## License
 
